@@ -7,8 +7,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AnimatePresence } from "framer-motion";
 import ScrollToTop from "./components/ScrollToTop";
-import CustomCursor from "./components/CustomCursor";
-import useCursor from "./hooks/useCursor";
 import Index from "./pages/Index";
 import Category from "./pages/Category";
 import Sell from "./pages/Sell";
@@ -61,19 +59,6 @@ const AnimatedRoutes = () => {
   );
 };
 
-// CursorWrapper component to handle cursor activation
-const CursorWrapper = () => {
-  // Get initial state from localStorage or default to true
-  const initialState = localStorage.getItem('customCursorEnabled');
-  const isEnabled = initialState !== null ? JSON.parse(initialState) : true;
-  
-  // Activate the custom cursor based on saved preference
-  useCursor(isEnabled);
-  
-  // Only render the cursor if it's enabled
-  return isEnabled ? <CustomCursor /> : null;
-};
-
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -82,7 +67,6 @@ const App = () => {
           <LanguageProvider>
             <TooltipProvider>
               <ScrollToTop />
-              <CursorWrapper />
               <AnimatedRoutes />
               <Toaster />
               <Sonner />

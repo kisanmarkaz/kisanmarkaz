@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import CursorToggle from './CursorToggle';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -136,7 +135,6 @@ const Footer = () => {
             >
               {t('footer.copyright')}
             </motion.p>
-            <CursorToggle className="mt-4 md:mt-0 glass-button px-3 py-2 rounded-lg" />
           </div>
         </div>
       </div>
