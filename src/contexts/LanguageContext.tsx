@@ -13,7 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 const loadTranslations = async (lang: Language) => {
   try {
-    const module = await fetch(`/src/locales/${lang}.json`);
+    const module = await fetch(`/locales/${lang}.json`);
     return await module.json();
   } catch (error) {
     console.error('Error loading translations:', error);
