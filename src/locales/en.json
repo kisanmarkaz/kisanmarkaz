@@ -1,0 +1,101 @@
+{
+  "common": {
+    "settings": "Settings",
+    "profile": "Profile",
+    "security": "Security",
+    "notifications": "Notifications",
+    "preferences": "Preferences",
+    "save": "Save",
+    "cancel": "Cancel",
+    "success": "Success",
+    "error": "Error",
+    "appName": "Kisan Markaz",
+    "country": "Pakistan",
+    "chat": "Chat",
+    "login": "Login",
+    "signIn": "Sign In",
+    "sell": "Sell",
+    "myListings": "My Listings",
+    "favorites": "Favorites",
+    "loading": "Loading...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View"
+  },
+  "hero": {
+    "title": "Pakistan's #1 Agricultural Marketplace",
+    "description": "Buy and sell agricultural products, livestock, equipment, and land across Pakistan",
+    "categories": {
+      "livestock": "Livestock",
+      "crops": "Crops",
+      "equipment": "Equipment"
+    },
+    "buttons": {
+      "startBuying": "Start Buying",
+      "postAd": "Post an Ad"
+    }
+  },
+  "search": {
+    "placeholder": "Search crops, livestock, equipment...",
+    "locations": {
+      "all": "All Pakistan",
+      "punjab": "Punjab",
+      "sindh": "Sindh",
+      "kpk": "KPK",
+      "balochistan": "Balochistan"
+    }
+  },
+  "footer": {
+    "description": "Pakistan's leading agricultural marketplace connecting farmers with buyers.",
+    "quickLinks": {
+      "title": "Quick Links",
+      "about": "About Us",
+      "howItWorks": "How It Works",
+      "safetyTips": "Safety Tips",
+      "successStories": "Success Stories",
+      "blog": "Blog"
+    },
+    "support": {
+      "title": "Support",
+      "helpCenter": "Help Center",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "support@kisanmarkaz.pk",
+      "phone": "+92 300 1234567",
+      "address": "Lahore, Pakistan"
+    },
+    "copyright": "© 2024 Kisan Markaz. All rights reserved."
+  },
+  "settings": {
+    "language": "Language",
+    "languageOptions": {
+      "en": "English",
+      "ur": "اردو"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "fullName": "Full Name",
+      "phone": "Phone Number",
+      "address": "Address",
+      "city": "City",
+      "province": "Province",
+      "updateSuccess": "Your profile has been updated successfully.",
+      "updateError": "Failed to update profile. Please try again."
+    },
+    "preferences": {
+      "title": "Preferences",
+      "language": "Language",
+      "currency": "Currency",
+      "darkMode": "Dark Mode",
+      "showFavorites": "Show Favorites",
+      "autoLocation": "Auto Location",
+      "languageUpdated": "Language changed successfully.",
+      "languageUpdateError": "Failed to change language. Please try again.",
+      "updated": "Your preferences have been saved.",
+      "updateError": "Failed to update preferences."
+    }
+  }
+}

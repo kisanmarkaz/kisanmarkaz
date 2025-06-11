@@ -1,0 +1,58 @@
+/* Hide the default cursor when our custom cursor is active */
+body.custom-cursor-active {
+  cursor: none !important;
+}
+
+body.custom-cursor-active * {
+  cursor: none !important;
+}
+
+/* Ensure cursor works well on interactive elements */
+body.custom-cursor-active a,
+body.custom-cursor-active button,
+body.custom-cursor-active [role="button"],
+body.custom-cursor-active .btn,
+body.custom-cursor-active .button,
+body.custom-cursor-active input,
+body.custom-cursor-active textarea,
+body.custom-cursor-active select {
+  cursor: none !important;
+}
+
+/* Add a subtle glow effect to interactive elements on hover */
+body.custom-cursor-active a:hover,
+body.custom-cursor-active button:hover,
+body.custom-cursor-active [role="button"]:hover,
+body.custom-cursor-active .btn:hover,
+body.custom-cursor-active .button:hover,
+body.custom-cursor-active input:hover,
+body.custom-cursor-active textarea:hover,
+body.custom-cursor-active select:hover {
+  filter: brightness(1.1);
+  transition: filter 0.3s ease;
+}
+
+/* Ensure the cursor particles have smooth animation */
+.cursor-particle {
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+/* Custom cursor elements */
+.custom-cursor, .cursor-dot {
+  will-change: transform;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Ensure the cursor is visible on all backgrounds */
+.custom-cursor {
+  mix-blend-mode: normal; /* Changed from difference to normal for better visibility */
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5)); /* Add shadow for better contrast */
+}
+
+/* Ensure the cursor dot is always visible */
+.cursor-dot {
+  mix-blend-mode: normal; /* Changed from exclusion to normal for better visibility */
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8)); /* Add shadow for better contrast */
+}

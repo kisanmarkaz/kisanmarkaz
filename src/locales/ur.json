@@ -1,0 +1,97 @@
+{
+  "common": {
+    "settings": "ترتیبات",
+    "profile": "پروفائل",
+    "security": "سیکیورٹی",
+    "notifications": "نوٹیفیکیشنز",
+    "preferences": "ترجیحات",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "success": "کامیابی",
+    "error": "خرابی",
+    "appName": "کسان مرکز",
+    "country": "پاکستان",
+    "chat": "چیٹ",
+    "login": "لاگ ان",
+    "signIn": "سائن ان",
+    "sell": "فروخت کریں",
+    "myListings": "میری اشاعتیں",
+    "favorites": "پسندیدہ"
+  },
+  "hero": {
+    "title": "پاکستان کی نمبر 1 زرعی مارکیٹ پلیس",
+    "description": "پورے پاکستان میں زرعی مصنوعات، مویشی، آلات اور زمین خریدیں اور فروخت کریں",
+    "categories": {
+      "livestock": "مویشی",
+      "crops": "فصلیں",
+      "equipment": "آلات"
+    },
+    "buttons": {
+      "startBuying": "خریداری شروع کریں",
+      "postAd": "اشتہار پوسٹ کریں"
+    }
+  },
+  "search": {
+    "placeholder": "فصلیں، مویشی، آلات تلاش کریں...",
+    "locations": {
+      "all": "پورا پاکستان",
+      "punjab": "پنجاب",
+      "sindh": "سندھ",
+      "kpk": "خیبر پختونخوا",
+      "balochistan": "بلوچستان"
+    }
+  },
+  "footer": {
+    "description": "پاکستان کی معروف زرعی مارکیٹ پلیس جو کسانوں کو خریداروں سے جوڑتی ہے۔",
+    "quickLinks": {
+      "title": "فوری روابط",
+      "about": "ہمارے بارے میں",
+      "howItWorks": "یہ کیسے کام کرتا ہے",
+      "safetyTips": "حفاظتی تجاویز",
+      "successStories": "کامیابی کی کہانیاں",
+      "blog": "بلاگ"
+    },
+    "support": {
+      "title": "معاونت",
+      "helpCenter": "مدد سنٹر",
+      "terms": "سروس کی شرائط",
+      "privacy": "رازداری کی پالیسی"
+    },
+    "contact": {
+      "title": "رابطہ کریں",
+      "email": "support@kisanmarkaz.pk",
+      "phone": "+92 300 1234567",
+      "address": "لاہور، پاکستان"
+    },
+    "copyright": "© 2024 کسان مرکز۔ جملہ حقوق محفوظ ہیں۔"
+  },
+  "settings": {
+    "language": "زبان",
+    "languageOptions": {
+      "en": "English",
+      "ur": "اردو"
+    },
+    "profile": {
+      "title": "پروفائل کی معلومات",
+      "fullName": "پورا نام",
+      "phone": "فون نمبر",
+      "address": "پتہ",
+      "city": "شہر",
+      "province": "صوبہ",
+      "updateSuccess": "آپ کا پروفائل کامیابی سے اپ ڈیٹ ہو گیا ہے۔",
+      "updateError": "پروفائل اپ ڈیٹ کرنے میں ناکام۔ دوبارہ کوشش کریں۔"
+    },
+    "preferences": {
+      "title": "ترجیحات",
+      "language": "زبان",
+      "currency": "کرنسی",
+      "darkMode": "ڈارک موڈ",
+      "showFavorites": "پسندیدہ دکھائیں",
+      "autoLocation": "خودکار مقام",
+      "languageUpdated": "زبان کامیابی سے تبدیل کر دی گئی ہے۔",
+      "languageUpdateError": "زبان تبدیل کرنے میں ناکام۔ دوبارہ کوشش کریں۔",
+      "updated": "آپ کی ترجیحات محفوظ کر دی گئی ہیں۔",
+      "updateError": "ترجیحات اپ ڈیٹ کرنے میں ناکام۔"
+    }
+  }
+}
