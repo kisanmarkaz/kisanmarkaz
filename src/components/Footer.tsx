@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import Logo from './Logo';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -13,7 +14,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-2xl font-bold text-white mb-4">{t('common.appName')}</h3>
+            <div className="mb-4">
+              <Logo size="lg" className="inline-block" />
+            </div>
             <p className="text-sm mb-4">
               {t('footer.description')}
             </p>

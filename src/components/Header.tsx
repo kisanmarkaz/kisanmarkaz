@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, slideInLeft, slideInRight, slideUp } from '@/lib/animations';
 import { useFavorites } from '@/hooks/useFavorites';
+import Logo from './Logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -111,14 +112,12 @@ const Header = () => {
         </motion.div>
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-4 gap-4">
+        <div className="flex items-center justify-between py-4">
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link to="/" className="text-2xl font-bold text-white">
-              {t('common.appName')}
-            </Link>
+            <Logo size="md" />
           </motion.div>
 
           {/* Search bar */}
