@@ -25,6 +25,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
+import Favorites from "./pages/Favorites";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const AnimatedRoutes = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/help" element={<Help />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/favorites" element={<Favorites />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -9,5 +9,11 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src")
     }
+  },
+  publicDir: "public",
+  server: {
+    watch: {
+      usePolling: true
+    }
   }
 });

@@ -29,15 +29,12 @@ export const Search: React.FC = () => {
           placeholder={t('search.placeholder')}
           className="w-full pl-10 glass-input bg-white/30 text-white placeholder-white/70 border-white/20"
         />
-        <motion.div
-          animate={{ rotate: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 3 }}
-          className="absolute left-3 top-1/2 transform -translate-y-1/2"
-        >
-          <SearchIcon className="h-5 w-5 text-white" />
-        </motion.div>
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+          <SearchIcon className="h-4 w-4 text-white/70" />
+        </div>
       </div>
-      <Select defaultValue="all">
+      
+      <Select>
         <SelectTrigger className="w-full sm:w-[200px] glass-input bg-white/30 text-white border-white/20">
           <SelectValue placeholder={t('search.locations.all')} />
         </SelectTrigger>

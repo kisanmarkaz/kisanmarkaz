@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, slideInLeft, slideInRight, slideUp } from '@/lib/animations';
+import { useFavorites } from '@/hooks/useFavorites';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { data: favorites = [] } = useFavorites();
 
   // Add scroll effect
   useEffect(() => {
@@ -190,8 +192,13 @@ const Header = () => {
           >
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link to="/favorites">
-                <Button variant="ghost" className="text-white hover:text-green-200 transition-colors duration-200">
+                <Button variant="ghost" className="text-white hover:text-green-200 transition-colors duration-200 relative">
                   <Heart className="h-5 w-5" />
+                  {favorites.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-yellow-500 text-xs text-gray-900 rounded-full w-4 h-4 flex items-center justify-center">
+                      {favorites.length}
+                    </span>
+                  )}
                 </Button>
               </Link>
             </motion.div>

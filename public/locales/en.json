@@ -97,5 +97,24 @@
       "updated": "Your preferences have been saved.",
       "updateError": "Failed to update preferences."
     }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "You haven't added any listings to your favorites yet.",
+    "emptyTitle": "No Favorites Yet",
+    "startBrowsing": "Start Browsing",
+    "sortBy": "Sort by",
+    "item": "item",
+    "items": "items",
+    "sortOptions": {
+      "date": "Date Added",
+      "price": "Price",
+      "name": "Name"
+    },
+    "shareList": "Share List",
+    "remove": "Remove from Favorites",
+    "add": "Add to Favorites",
+    "removed": "Removed from favorites",
+    "added": "Added to favorites"
   }
 }

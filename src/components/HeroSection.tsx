@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fadeIn, slideUp, staggerContainer, slideInLeft, slideInRight } from '@/lib/animations';
 import { Search } from '@/components/Search';
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   const { t } = useLanguage();
@@ -14,11 +15,11 @@ const HeroSection = () => {
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className="bg-gradient-to-r from-green-700 to-green-600 text-white py-24 mt-16 relative overflow-hidden backdrop-blur-sm"
+      className="bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 text-white py-24 mt-16 relative overflow-hidden backdrop-blur-sm"
     >
       {/* Background animated shapes */}
       <motion.div 
-        className="absolute top-0 left-0 w-64 h-64 bg-green-500 rounded-full opacity-20 -translate-x-1/2 -translate-y-1/2"
+        className="absolute top-0 left-0 w-64 h-64 bg-emerald-400 rounded-full opacity-20 -translate-x-1/2 -translate-y-1/2 blur-2xl"
         animate={{ 
           scale: [1, 1.2, 1],
           x: ['-50%', '-40%', '-50%'],
@@ -31,7 +32,7 @@ const HeroSection = () => {
         }}
       />
       <motion.div 
-        className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-400 rounded-full opacity-10 translate-x-1/2 translate-y-1/2"
+        className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-400 rounded-full opacity-20 translate-x-1/2 translate-y-1/2 blur-2xl"
         animate={{ 
           scale: [1, 1.3, 1],
           x: ['50%', '40%', '50%'],
@@ -44,6 +45,9 @@ const HeroSection = () => {
         }}
       />
 
+      {/* Decorative pattern overlay */}
+      <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
+
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
           variants={staggerContainer}
@@ -51,13 +55,13 @@ const HeroSection = () => {
         >
           <motion.h1 
             variants={slideUp}
-            className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
+            className="text-5xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-100"
           >
             {t('hero.title')}
           </motion.h1>
           <motion.p 
             variants={slideUp}
-            className="text-xl mb-10 text-green-100"
+            className="text-xl mb-10 text-emerald-100"
           >
             {t('hero.description')}
           </motion.p>
@@ -69,7 +73,7 @@ const HeroSection = () => {
             <motion.div 
               variants={slideInLeft}
               whileHover={{ scale: 1.1, y: -5 }}
-              className="flex items-center text-green-100 glass px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover-glow"
+              className="flex items-center text-white backdrop-blur-md bg-white/10 px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover:border-white/40 transition-all duration-300"
             >
               <motion.div
                 animate={{ rotate: [0, 10, 0] }}
@@ -82,7 +86,7 @@ const HeroSection = () => {
             <motion.div 
               variants={slideUp}
               whileHover={{ scale: 1.1, y: -5 }}
-              className="flex items-center text-green-100 glass px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover-glow"
+              className="flex items-center text-white backdrop-blur-md bg-white/10 px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover:border-white/40 transition-all duration-300"
             >
               <motion.div
                 animate={{ rotate: [0, -10, 0] }}
@@ -95,7 +99,7 @@ const HeroSection = () => {
             <motion.div 
               variants={slideInRight}
               whileHover={{ scale: 1.1, y: -5 }}
-              className="flex items-center text-green-100 glass px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover-glow"
+              className="flex items-center text-white backdrop-blur-md bg-white/10 px-5 py-3 rounded-full shadow-lg hover:shadow-xl border border-white/20 hover:border-white/40 transition-all duration-300"
             >
               <motion.div
                 animate={{ rotate: [0, 10, 0] }}
@@ -115,35 +119,40 @@ const HeroSection = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button 
-                size="lg" 
-                className="glass-button bg-yellow-500/90 hover:bg-yellow-500 text-gray-900 font-semibold shadow-lg hover:shadow-yellow-500/50 transition-all duration-300 border border-yellow-400/50"
-              >
-                {t('hero.buttons.startBuying')}
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+              <Link to="/search">
+                <Button 
+                  size="lg" 
+                  className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold shadow-lg hover:shadow-yellow-500/50 transition-all duration-300"
                 >
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </motion.div>
-              </Button>
+                  {t('hero.buttons.startBuying')}
+                  <motion.div
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </motion.div>
+                </Button>
+              </Link>
             </motion.div>
+            
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="glass-button border-white/70 text-white hover:bg-white/20 shadow-lg hover:shadow-white/30 transition-all duration-300"
-              >
-                <motion.span
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+              <Link to="/sell">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="bg-white/10 backdrop-blur-md border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 shadow-lg hover:shadow-yellow-500/30 transition-all duration-300"
                 >
-                  {t('hero.buttons.postAd')}
-                </motion.span>
-              </Button>
+                  <motion.span
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    {t('hero.buttons.postAd')}
+                  </motion.span>
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
 
