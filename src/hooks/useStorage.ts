@@ -37,8 +37,27 @@ export function useStorage() {
     }
   };
 
+  const deleteImage = async (url: string) => {
+    try {
+      // Extract the path from the URL
+      const path = url.split('/').slice(-2).join('/');
+      
+      const { error } = await supabase.storage
+        .from('listings')
+        .remove([path]);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      throw error;
+    }
+  };
+
   return {
     uploadImages,
+    deleteImage,
     uploading
   };
 } 

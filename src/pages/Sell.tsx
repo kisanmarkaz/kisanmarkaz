@@ -35,8 +35,6 @@ interface ListingFormData {
   location_province?: string;
   location_address?: string;
   quantity: string;
-  quantity_unit: string;
-  price_unit: string;
   harvest_date?: string;
   organic?: 'yes' | 'no';
   certification?: '' | 'organic' | 'gap' | 'other';
@@ -60,8 +58,6 @@ const listingSchema = z.object({
   location_province: z.string().optional(),
   location_address: z.string().optional(),
   quantity: z.string().min(1, 'Quantity is required'),
-  quantity_unit: z.string().min(1, 'Unit is required'),
-  price_unit: z.string().min(1, 'Price unit is required'),
   harvest_date: z.string().optional(),
   organic: z.enum(['yes', 'no']).optional(),
   certification: z.enum(['', 'organic', 'gap', 'other']).optional(),
@@ -99,9 +95,7 @@ const Sell = () => {
       status: 'active',
       organic: 'no',
       negotiable: 'no',
-      delivery_available: 'no',
-      price_unit: 'total',
-      quantity_unit: 'kg'
+      delivery_available: 'no'
     }
   });
 
@@ -194,24 +188,6 @@ const Sell = () => {
         return;
       }
 
-      if (!data.price_unit) {
-        toast({
-          title: "Error",
-          description: "Please select a price unit.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (!data.quantity_unit) {
-        toast({
-          title: "Error",
-          description: "Please select a quantity unit.",
-          variant: "destructive"
-        });
-        return;
-      }
-
       setIsSubmitting(true);
       console.log('Uploading images...');
 
@@ -229,8 +205,6 @@ const Sell = () => {
         location_province: data.location_province,
         location_address: data.location_address,
         quantity: data.quantity ? parseFloat(data.quantity) : null,
-        quantity_unit: data.quantity_unit,
-        price_unit: data.price_unit,
         harvest_date: data.harvest_date,
         organic: data.organic,
         certification: data.certification,
@@ -429,24 +403,10 @@ const Sell = () => {
                     placeholder="Enter price"
                     className={errors.price ? 'border-red-500' : ''}
                   />
-                  <Select
-                    onValueChange={(value) => setValue('price_unit', value)}
-                    defaultValue={watch('price_unit')}
-                  >
-                    <SelectTrigger className={`w-[120px] ${errors.price_unit ? 'border-red-500' : ''}`}>
-                      <SelectValue placeholder="Unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="total">Total</SelectItem>
-                      <SelectItem value="per_kg">Per Kg</SelectItem>
-                      <SelectItem value="per_ton">Per Ton</SelectItem>
-                      <SelectItem value="per_piece">Per Piece</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
-                {(errors.price || errors.price_unit) && (
+                {errors.price && (
                   <p className="mt-1 text-sm text-red-500">
-                    {errors.price?.message || errors.price_unit?.message}
+                    {errors.price.message}
                   </p>
                 )}
               </div>
@@ -463,24 +423,10 @@ const Sell = () => {
                     placeholder="Enter quantity"
                     className={errors.quantity ? 'border-red-500' : ''}
                   />
-                  <Select
-                    onValueChange={(value) => setValue('quantity_unit', value)}
-                    defaultValue={watch('quantity_unit')}
-                  >
-                    <SelectTrigger className={`w-[120px] ${errors.quantity_unit ? 'border-red-500' : ''}`}>
-                      <SelectValue placeholder="Unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="kg">Kg</SelectItem>
-                      <SelectItem value="ton">Ton</SelectItem>
-                      <SelectItem value="piece">Piece</SelectItem>
-                      <SelectItem value="dozen">Dozen</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
-                {(errors.quantity || errors.quantity_unit) && (
+                {errors.quantity && (
                   <p className="mt-1 text-sm text-red-500">
-                    {errors.quantity?.message || errors.quantity_unit?.message}
+                    {errors.quantity.message}
                   </p>
                 )}
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPin, Calendar, ArrowLeft, Phone, Mail, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
@@ -10,49 +10,59 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import type { Listing } from '@/types/supabase';
+import { useLanguage } from '@/contexts/LanguageContext';
+import Layout from '../components/Layout';
+
+interface CategoryField {
+  id: string;
+  field_name: string;
+  field_label: string;
+  field_type: string;
+  required: boolean;
+  field_options?: {
+    options: string[];
+  };
+}
+
+interface ListingFieldValue {
+  id: string;
+  listing_id: string;
+  field_id: string;
+  field_value: string;
+  field?: CategoryField;
+}
+
+interface ListingWithFieldValues extends Listing {
+  field_values?: ListingFieldValue[];
+}
 
 const ListingDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const { data: favorites } = useFavorites();
   const toggleFavorite = useToggleFavorite();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
-  const { data: listing, isLoading } = useQuery({
+  const { data: listing, isLoading } = useQuery<ListingWithFieldValues>({
     queryKey: ['listing', id],
     queryFn: async () => {
-      // First get the listing
-      const { data: listingData, error: listingError } = await supabase
+      const { data, error } = await supabase
         .from('listings')
         .select(`
           *,
           category:categories(*),
           subcategory:subcategories(*),
-          field_values:listing_field_values(
-            *,
-            field:category_fields(*)
-          )
+          user:profiles(*),
+          field_values:listing_field_values(*)
         `)
         .eq('id', id)
         .single();
 
-      if (listingError) throw listingError;
-
-      // Then get the user profile
-      if (listingData?.user_id) {
-        const { data: userData, error: userError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', listingData.user_id)
-          .single();
-
-        if (!userError && userData) {
-          return { ...listingData, user: userData } as Listing;
-        }
-      }
-
-      return listingData as Listing;
-    }
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id
   });
 
   const isFavorite = (listingId: string) => {
@@ -84,7 +94,7 @@ const ListingDetail = () => {
     if (e.key === 'Escape') setSelectedImageIndex(null);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedImageIndex !== null) {
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
@@ -93,18 +103,11 @@ const ListingDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8 mt-16">
-          <div className="animate-pulse">
-            <div className="h-96 bg-gray-200 rounded-lg mb-8"></div>
-            <div className="h-8 bg-gray-200 w-3/4 rounded mb-4"></div>
-            <div className="h-6 bg-gray-200 w-1/4 rounded mb-8"></div>
-            <div className="h-32 bg-gray-200 rounded mb-8"></div>
-          </div>
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div>Loading...</div>
         </div>
-        <Footer />
-      </div>
+      </Layout>
     );
   }
 
@@ -207,22 +210,11 @@ const ListingDetail = () => {
                     <span className="ml-2 text-gray-900">{listing.subcategory?.name}</span>
                   </div>
                 )}
-                {listing.price_unit && (
-                  <div>
-                    <span className="text-gray-500">Price Unit:</span>
-                    <span className="ml-2 text-gray-900">
-                      {listing.price_unit === 'total' ? 'Total Price' :
-                       listing.price_unit === 'per_kg' ? 'Per Kg' :
-                       listing.price_unit === 'per_acre' ? 'Per Acre' :
-                       'Per Unit'}
-                    </span>
-                  </div>
-                )}
                 {listing.quantity && (
                   <div>
                     <span className="text-gray-500">Quantity:</span>
                     <span className="ml-2 text-gray-900">
-                      {listing.quantity} {listing.quantity_unit}
+                      {listing.quantity}
                     </span>
                   </div>
                 )}
@@ -268,7 +260,7 @@ const ListingDetail = () => {
                   <div>
                     <span className="text-gray-500">Minimum Order:</span>
                     <span className="ml-2 text-gray-900">
-                      {listing.min_order_quantity} {listing.quantity_unit}
+                      {listing.min_order_quantity}
                     </span>
                   </div>
                 )}
@@ -289,11 +281,11 @@ const ListingDetail = () => {
                 {/* Category-specific fields */}
                 {listing.field_values?.map((fieldValue) => (
                   <div key={fieldValue.id}>
-                    <span className="text-gray-500">{fieldValue.field.field_label}:</span>
+                    <span className="text-gray-500">{fieldValue.field?.field_label}:</span>
                     <span className="ml-2 text-gray-900">
-                      {fieldValue.field.field_type === 'boolean' 
+                      {fieldValue.field?.field_type === 'boolean' 
                         ? (fieldValue.field_value ? 'Yes' : 'No')
-                        : fieldValue.field.field_type === 'date'
+                        : fieldValue.field?.field_type === 'date'
                         ? format(new Date(fieldValue.field_value), 'MMM d, yyyy')
                         : fieldValue.field_value}
                     </span>

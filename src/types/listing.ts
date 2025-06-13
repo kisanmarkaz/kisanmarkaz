@@ -26,7 +26,6 @@ export interface Listing {
   title: string;
   description: string;
   price: number;
-  price_unit: 'total' | 'per_kg' | 'per_acre' | 'per_unit';
   category_id: string;
   subcategory_id?: string;
   user_id: string;
@@ -35,7 +34,6 @@ export interface Listing {
   updated_at: string;
   images?: string[];
   quantity?: number;
-  quantity_unit?: string;
   condition?: string;
   negotiable?: boolean;
   harvest_date?: string;

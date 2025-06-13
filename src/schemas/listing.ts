@@ -1,19 +1,5 @@
 import { z } from 'zod';
 
-export const PriceUnitEnum = {
-  total: 'total',
-  per_kg: 'per_kg',
-  per_acre: 'per_acre',
-  per_unit: 'per_unit'
-} as const;
-
-export const QuantityUnitEnum = {
-  kg: 'kg',
-  tons: 'tons',
-  acres: 'acres',
-  units: 'units'
-} as const;
-
 export const YesNoEnum = {
   yes: 'yes',
   no: 'no'
@@ -49,25 +35,30 @@ export const ListingStatusEnum = {
   draft: 'draft'
 } as const;
 
-export type PriceUnit = typeof PriceUnitEnum[keyof typeof PriceUnitEnum];
-export type QuantityUnit = typeof QuantityUnitEnum[keyof typeof QuantityUnitEnum];
-export type YesNo = typeof YesNoEnum[keyof typeof YesNoEnum];
-export type Condition = typeof ConditionEnum[keyof typeof ConditionEnum];
-export type Certification = typeof CertificationEnum[keyof typeof CertificationEnum];
-export type PaymentTerms = typeof PaymentTermsEnum[keyof typeof PaymentTermsEnum];
-export type ListingStatus = typeof ListingStatusEnum[keyof typeof ListingStatusEnum];
+export const PriceUnitEnum = {
+  total: 'total',
+  per_kg: 'per_kg',
+  per_piece: 'per_piece'
+} as const;
+
+export const QuantityUnitEnum = {
+  kg: 'kg',
+  piece: 'piece',
+  ton: 'ton',
+  quintal: 'quintal'
+} as const;
 
 export const listingSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   price: z.string().min(1, 'Price is required'),
+  price_unit: z.nativeEnum(PriceUnitEnum).default(PriceUnitEnum.total),
   category_id: z.string().min(1, 'Category is required'),
   location_city: z.string().min(1, 'City is required'),
   location_province: z.string().optional(),
   location_address: z.string().optional(),
   quantity: z.string().min(1, 'Quantity is required'),
   quantity_unit: z.nativeEnum(QuantityUnitEnum).default(QuantityUnitEnum.kg),
-  price_unit: z.nativeEnum(PriceUnitEnum).default(PriceUnitEnum.total),
   harvest_date: z.string().optional(),
   organic: z.nativeEnum(YesNoEnum).default(YesNoEnum.no),
   certification: z.nativeEnum(CertificationEnum).default(CertificationEnum.none),
