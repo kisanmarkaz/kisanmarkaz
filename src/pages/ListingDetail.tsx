@@ -43,6 +43,7 @@ const ListingDetail = () => {
   const { data: favorites } = useFavorites();
   const toggleFavorite = useToggleFavorite();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [showPhone, setShowPhone] = useState(false);
 
   const { data: listing, isLoading } = useQuery<ListingWithFieldValues>({
     queryKey: ['listing', id],
@@ -317,9 +318,13 @@ const ListingDetail = () => {
               {user ? (
                 <div className="space-y-3">
                   {listing.contact_phone && (
-                    <Button className="w-full" variant="outline">
+                    <Button 
+                      className="w-full" 
+                      variant="outline"
+                      onClick={() => setShowPhone(!showPhone)}
+                    >
                       <Phone className="h-4 w-4 mr-2" />
-                      {listing.contact_phone}
+                      {showPhone ? listing.contact_phone : 'Click to Show Phone Number'}
                     </Button>
                   )}
                   <Button className="w-full">

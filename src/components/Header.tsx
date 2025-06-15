@@ -102,7 +102,7 @@ const Header = () => {
               </>
             ) : (
               <motion.div whileHover={{ scale: 1.05 }}>
-                <Link to="/login" className="flex items-center hover:text-green-200 transition-colors duration-200">
+                <Link to="/auth" className="flex items-center hover:text-green-200 transition-colors duration-200">
                   <User className="h-4 w-4 mr-1" />
                   {t('common.login')}
                 </Link>
