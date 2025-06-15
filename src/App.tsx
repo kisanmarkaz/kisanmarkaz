@@ -27,6 +27,8 @@ import Terms from "./pages/Terms";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
 import Favorites from "./pages/Favorites";
+import Messages from "./pages/Messages";
+import Conversation from "./pages/Conversation";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ const AnimatedRoutes = () => {
         <Route path="/search" element={<Search />} />
         <Route path="/listing/:id" element={<ListingDetail />} />
         <Route path="/edit-listing/:id" element={<EditListing />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/messages/:id" element={<Conversation />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/safety-tips" element={<SafetyTips />} />

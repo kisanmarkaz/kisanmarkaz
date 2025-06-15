@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, ArrowLeft, Phone, Mail, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import type { Listing } from '@/types/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '../components/Layout';
+import { useStartConversation } from '@/hooks/useMessages';
 
 interface CategoryField {
   id: string;
@@ -44,6 +45,8 @@ const ListingDetail = () => {
   const toggleFavorite = useToggleFavorite();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [showPhone, setShowPhone] = useState(false);
+  const startConversation = useStartConversation();
+  const navigate = useNavigate();
 
   const { data: listing, isLoading } = useQuery<ListingWithFieldValues>({
     queryKey: ['listing', id],
@@ -101,6 +104,21 @@ const ListingDetail = () => {
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
   }, [selectedImageIndex]);
+
+  const handleMessageSeller = async () => {
+    if (!user) return;
+    if (!listing?.user_id) return;
+
+    try {
+      const conversation = await startConversation.mutateAsync({
+        listingId: listing.id,
+        sellerId: listing.user_id
+      });
+      navigate(`/messages/${conversation.id}`);
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -299,47 +317,64 @@ const ListingDetail = () => {
           {/* Sidebar */}
           <div className="lg:w-1/3">
             {/* Seller Information */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
               <h2 className="text-xl font-semibold mb-4">Seller Information</h2>
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+              
+              <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">
-                    {listing.user?.full_name || 'Anonymous Seller'}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {listing.user?.created_at 
-                      ? `Member since ${format(new Date(listing.user.created_at), 'MMM yyyy')}`
-                      : 'Member'}
-                  </p>
+                  <label className="text-sm text-gray-500">Name</label>
+                  <p className="font-medium">{listing.contact_name}</p>
+                </div>
+
+                {listing.contact_phone && (
+                  <div>
+                    <label className="text-sm text-gray-500">Phone</label>
+                    <div className="flex items-center gap-2">
+                      {showPhone ? (
+                        <p className="font-medium">{listing.contact_phone}</p>
+                      ) : (
+                        <p className="font-medium">••••••••••</p>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowPhone(!showPhone)}
+                      >
+                        {showPhone ? 'Hide' : 'Show'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {listing.contact_email && (
+                  <div>
+                    <label className="text-sm text-gray-500">Email</label>
+                    <p className="font-medium">{listing.contact_email}</p>
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  {user ? (
+                    user.id !== listing.user_id ? (
+                      <Button
+                        className="w-full"
+                        onClick={handleMessageSeller}
+                        disabled={startConversation.isPending}
+                      >
+                        Message Seller
+                      </Button>
+                    ) : (
+                      <p className="text-sm text-gray-500 text-center">This is your listing</p>
+                    )
+                  ) : (
+                    <Link to="/auth" className="block">
+                      <Button className="w-full">
+                        Login to Message Seller
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
-
-              {user ? (
-                <div className="space-y-3">
-                  {listing.contact_phone && (
-                    <Button 
-                      className="w-full" 
-                      variant="outline"
-                      onClick={() => setShowPhone(!showPhone)}
-                    >
-                      <Phone className="h-4 w-4 mr-2" />
-                      {showPhone ? listing.contact_phone : 'Click to Show Phone Number'}
-                    </Button>
-                  )}
-                  <Button className="w-full">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Contact Seller
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <p className="text-gray-600 mb-4">Login to contact the seller</p>
-                  <Link to="/auth">
-                    <Button className="w-full">Login</Button>
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
         </div>

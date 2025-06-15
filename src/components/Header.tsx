@@ -225,6 +225,12 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/messages" className="w-full flex items-center">
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        My Messages
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/settings" className="w-full">
                         {t('common.settings')}
                       </Link>
