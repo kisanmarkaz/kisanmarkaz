@@ -75,6 +75,14 @@ interface ListingWithDetails {
   user_id: string;
 }
 
+// Add this function to validate the status
+const validateStatus = (status: string): ListingStatus => {
+  if (isListingStatus(status)) {
+    return status;
+  }
+  return ListingStatusEnum.active; // Default to active if invalid status
+};
+
 export default function EditListing() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -165,6 +173,7 @@ export default function EditListing() {
 
     console.log('Updating form with listing data:', listing);
     try {
+      const status = validateStatus(listing.status);
       form.reset({
         title: listing.title,
         description: listing.description,
@@ -177,7 +186,7 @@ export default function EditListing() {
         contact_name: listing.contact_name || '',
         contact_phone: listing.contact_phone || '',
         contact_email: listing.contact_email || '',
-        status: validateStatus(listing.status),
+        status: status,
         images: listing.images || []
       });
       setSelectedFiles([]);
