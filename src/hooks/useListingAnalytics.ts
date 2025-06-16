@@ -2,16 +2,33 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface ListingAnalytics {
-  views: number;
-  inquiries: number;
-  favorites: number;
+  impressions: number;
+  clicks: number;
+  phone_views: number;
+  messages_sent: number;
+}
+
+// Helper function to increment a specific metric
+async function incrementMetric(listingId: string, metric: keyof ListingAnalytics) {
+  const { data, error } = await supabase.rpc('increment_listing_analytics', {
+    p_listing_id: listingId,
+    p_metric: metric
+  });
+  
+  if (error) {
+    console.error(`Error incrementing ${metric}:`, error);
+    throw error;
+  }
+  
+  return data;
 }
 
 export function useListingAnalytics(listingId: string) {
   const [analytics, setAnalytics] = useState<ListingAnalytics>({
-    views: 0,
-    inquiries: 0,
-    favorites: 0
+    impressions: 0,
+    clicks: 0,
+    phone_views: 0,
+    messages_sent: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -21,39 +38,47 @@ export function useListingAnalytics(listingId: string) {
       try {
         setLoading(true);
         
-        // Fetch views
-        const { data: viewsData, error: viewsError } = await supabase
-          .from('listing_views')
-          .select('count')
+        // Fetch analytics from the consolidated listing_analytics table
+        const { data, error } = await supabase
+          .from('listing_analytics')
+          .select('*')
           .eq('listing_id', listingId)
           .single();
           
-        if (viewsError) throw viewsError;
+        if (error && error.code !== 'PGRST116') { // Ignore "no rows returned" error
+          throw error;
+        }
 
-        // Fetch inquiries
-        const { data: inquiriesData, error: inquiriesError } = await supabase
-          .from('listing_inquiries')
-          .select('count')
-          .eq('listing_id', listingId)
-          .single();
-          
-        if (inquiriesError) throw inquiriesError;
+        // If no data exists yet, create initial analytics record
+        if (!data) {
+          const { error: insertError } = await supabase
+            .from('listing_analytics')
+            .insert({
+              listing_id: listingId,
+              impressions: 0,
+              clicks: 0,
+              phone_views: 0,
+              messages_sent: 0
+            });
 
-        // Fetch favorites
-        const { data: favoritesData, error: favoritesError } = await supabase
-          .from('listing_favorites')
-          .select('count')
-          .eq('listing_id', listingId)
-          .single();
-          
-        if (favoritesError) throw favoritesError;
+          if (insertError) throw insertError;
 
-        setAnalytics({
-          views: viewsData?.count || 0,
-          inquiries: inquiriesData?.count || 0,
-          favorites: favoritesData?.count || 0
-        });
+          setAnalytics({
+            impressions: 0,
+            clicks: 0,
+            phone_views: 0,
+            messages_sent: 0
+          });
+        } else {
+          setAnalytics({
+            impressions: data.impressions || 0,
+            clicks: data.clicks || 0,
+            phone_views: data.phone_views || 0,
+            messages_sent: data.messages_sent || 0
+          });
+        }
       } catch (err) {
+        console.error('Error fetching analytics:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch analytics'));
       } finally {
         setLoading(false);
@@ -65,5 +90,41 @@ export function useListingAnalytics(listingId: string) {
     }
   }, [listingId]);
 
-  return { analytics, loading, error };
+  // Track impression when the listing is viewed
+  useEffect(() => {
+    if (listingId) {
+      incrementMetric(listingId, 'impressions').catch(console.error);
+    }
+  }, [listingId]);
+
+  // Functions to track other metrics
+  const trackClick = async () => {
+    if (listingId) {
+      await incrementMetric(listingId, 'clicks');
+      setAnalytics(prev => ({ ...prev, clicks: prev.clicks + 1 }));
+    }
+  };
+
+  const trackPhoneView = async () => {
+    if (listingId) {
+      await incrementMetric(listingId, 'phone_views');
+      setAnalytics(prev => ({ ...prev, phone_views: prev.phone_views + 1 }));
+    }
+  };
+
+  const trackMessage = async () => {
+    if (listingId) {
+      await incrementMetric(listingId, 'messages_sent');
+      setAnalytics(prev => ({ ...prev, messages_sent: prev.messages_sent + 1 }));
+    }
+  };
+
+  return { 
+    analytics, 
+    loading, 
+    error,
+    trackClick,
+    trackPhoneView,
+    trackMessage
+  };
 } 

@@ -13,6 +13,7 @@ import type { Listing } from '@/types/supabase';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Layout from '../components/Layout';
 import { useStartConversation } from '@/hooks/useMessages';
+import { useListingAnalytics } from '@/hooks/useListingAnalytics';
 
 interface CategoryField {
   id: string;
@@ -47,6 +48,7 @@ const ListingDetail = () => {
   const [showPhone, setShowPhone] = useState(false);
   const startConversation = useStartConversation();
   const navigate = useNavigate();
+  const { trackClick, trackPhoneView, trackMessage } = useListingAnalytics(id || '');
 
   const { data: listing, isLoading } = useQuery<ListingWithFieldValues>({
     queryKey: ['listing', id],
@@ -105,6 +107,11 @@ const ListingDetail = () => {
     }
   }, [selectedImageIndex]);
 
+  const handleShowPhone = () => {
+    setShowPhone(true);
+    trackPhoneView().catch(console.error);
+  };
+
   const handleMessageSeller = async () => {
     if (!user) return;
     if (!listing?.user_id) return;
@@ -114,10 +121,16 @@ const ListingDetail = () => {
         listingId: listing.id,
         sellerId: listing.user_id
       });
+      trackMessage().catch(console.error);
       navigate(`/messages/${conversation.id}`);
     } catch (error) {
       console.error('Failed to start conversation:', error);
     }
+  };
+
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    trackClick().catch(console.error);
   };
 
   if (isLoading) {
@@ -164,7 +177,7 @@ const ListingDetail = () => {
                   src={listing.images?.[0] || "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=800&h=600&fit=crop"}
                   alt={listing.title}
                   className="w-full h-96 object-cover cursor-pointer"
-                  onClick={() => setSelectedImageIndex(0)}
+                  onClick={() => handleImageClick(0)}
                 />
                 {listing.images && listing.images.length > 1 && (
                   <div className="grid grid-cols-4 gap-2 mt-2 p-2">
@@ -174,7 +187,7 @@ const ListingDetail = () => {
                         src={image}
                         alt={`${listing.title} - Image ${index + 2}`}
                         className="w-full h-24 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => setSelectedImageIndex(index + 1)}
+                        onClick={() => handleImageClick(index + 1)}
                       />
                     ))}
                   </div>
@@ -338,7 +351,7 @@ const ListingDetail = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setShowPhone(!showPhone)}
+                        onClick={handleShowPhone}
                       >
                         {showPhone ? 'Hide' : 'Show'}
                       </Button>

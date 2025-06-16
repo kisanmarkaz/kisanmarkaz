@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ListingStatusEnum } from '../schemas/listing';
 import { isListingStatus } from '../lib/typeGuards';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ListingAnalytics } from '@/components/ListingAnalytics';
 import type { Database } from '@/integrations/supabase/types';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -403,7 +404,28 @@ export default function EditListing() {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8">Edit Listing</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold">Edit Listing</h1>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/listings')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Listings
+          </Button>
+        </div>
+
+        {/* Analytics Card */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Listing Performance</CardTitle>
+            <CardDescription>Track how your listing is performing</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ListingAnalytics listingId={listing.id} />
+          </CardContent>
+        </Card>
         
         <div className="max-w-3xl mx-auto">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
