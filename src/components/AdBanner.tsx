@@ -1,41 +1,69 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface AdBannerProps {
   className?: string;
 }
 
 const AdBanner: React.FC<AdBannerProps> = ({ className = '' }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // Create and inject the first script
-    const script1 = document.createElement('script');
-    script1.type = 'text/javascript';
-    script1.text = `
-      atOptions = {
-        'key' : '079a9f013af48f27f600011f61238518',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    `;
-    document.body.appendChild(script1);
+    console.log('AdBanner: Starting to inject scripts...');
 
-    // Create and inject the second script
-    const script2 = document.createElement('script');
-    script2.type = 'text/javascript';
-    script2.src = '//www.highperformanceformat.com/079a9f013af48f27f600011f61238518/invoke.js';
-    document.body.appendChild(script2);
+    try {
+      // First, create a container div for the ad
+      const adContainer = document.createElement('div');
+      
+      // Create the first script element
+      const configScript = document.createElement('script');
+      configScript.type = 'text/javascript';
+      configScript.innerHTML = `
+        atOptions = {
+          'key' : '079a9f013af48f27f600011f61238518',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      `;
+      
+      // Create the second script element
+      const invokeScript = document.createElement('script');
+      invokeScript.type = 'text/javascript';
+      invokeScript.src = '//www.highperformanceformat.com/079a9f013af48f27f600011f61238518/invoke.js';
+      
+      // Add event listeners for debugging
+      invokeScript.onload = () => console.log('AdBanner: Invoke script loaded successfully');
+      invokeScript.onerror = (error) => console.error('AdBanner: Error loading invoke script:', error);
+      
+      // Append scripts to the container div
+      if (containerRef.current) {
+        console.log('AdBanner: Container found, injecting scripts...');
+        containerRef.current.appendChild(configScript);
+        containerRef.current.appendChild(invokeScript);
+      } else {
+        console.error('AdBanner: Container ref not found');
+      }
+    } catch (error) {
+      console.error('AdBanner: Error setting up ad:', error);
+    }
 
-    // Cleanup function
     return () => {
-      document.body.removeChild(script1);
-      document.body.removeChild(script2);
+      console.log('AdBanner: Cleaning up...');
+      if (containerRef.current) {
+        while (containerRef.current.firstChild) {
+          containerRef.current.removeChild(containerRef.current.firstChild);
+        }
+      }
     };
   }, []);
 
   return (
     <div className={`w-full flex justify-center py-4 bg-white/5 mb-4 ${className}`}>
-      <div id="adsterra-banner" className="w-[728px] h-[90px]" />
+      <div 
+        ref={containerRef}
+        className="w-[728px] h-[90px]"
+      />
     </div>
   );
 };
