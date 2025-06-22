@@ -1,3 +1,5 @@
+import { Mail as MailIcon, Phone as PhoneIcon, MapPin as LocationMarkerIcon } from 'lucide-react';
+
 <div className="container mx-auto px-4 py-8">
     <h1 className="text-4xl font-bold text-center mb-8">Contact Kisan Markaz</h1>
     <div className="max-w-2xl mx-auto">
@@ -15,11 +17,11 @@
                     </li>
                     <li className="flex items-center">
                         <PhoneIcon className="h-6 w-6 text-green-600 mr-3" />
-                        <span>Phone: +92 300 1234567</span>
+                        <span>Phone: 03213037082</span>
                     </li>
                     <li className="flex items-center">
                         <LocationMarkerIcon className="h-6 w-6 text-green-600 mr-3" />
-                        <span>Address: Office #123, Gulberg III, Lahore, Pakistan</span>
+                        <span>Address: L-377, Sector-4, New Karachi</span>
                     </li>
                 </ul>
             </div>

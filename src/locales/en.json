@@ -59,13 +59,15 @@
       "title": "Support",
       "helpCenter": "Help Center",
       "terms": "Terms of Service",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "refundPolicy": "Refund Policy",
+      "shippingPolicy": "Shipping Policy"
     },
     "contact": {
       "title": "Contact",
       "email": "support@kisanmarkaz.pk",
-      "phone": "+92 300 1234567",
-      "address": "Lahore, Pakistan"
+      "phone": "03213037082",
+      "address": "L-377, Sector-4, New Karachi"
     },
     "copyright": "© 2024 Kisan Markaz. All rights reserved."
   },

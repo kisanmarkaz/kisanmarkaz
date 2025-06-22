@@ -180,7 +180,7 @@ const Help = () => {
               <Phone className="w-6 h-6 text-green-600 mr-3" />
               <div>
                 <div className="font-medium">Phone Support</div>
-                <div className="text-gray-600">+92 300 1234567</div>
+                <div className="text-gray-600">03213037082</div>
               </div>
             </div>
           </div>

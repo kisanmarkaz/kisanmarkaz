@@ -104,8 +104,8 @@ const SafetyTips = () => {
               If you encounter any suspicious activity or need assistance, our support team is here to help.
             </p>
             <div className="text-gray-600">
-              <p>Email: support@farmx.pk</p>
-              <p>Phone: +92 300 1234567</p>
+              <p>Email: support@kisanmarkaz.pk</p>
+              <p>Phone: 03213037082</p>
               <p>Available: 24/7</p>
             </div>
           </div>

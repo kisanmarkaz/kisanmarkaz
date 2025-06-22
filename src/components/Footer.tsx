@@ -6,7 +6,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Logo from './Logo';
 
 const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const getTranslatedText = (key: string, fallback: string) => {
+    const translated = t(key);
+    return translated === key ? fallback : translated;
+  };
 
   return (
     <footer className="glass-dark bg-gray-900/90 text-gray-300 backdrop-blur-md border-t border-white/10 shadow-lg">
@@ -18,7 +23,7 @@ const Footer = () => {
               <Logo size="lg" className="inline-block" />
             </div>
             <p className="text-sm mb-4">
-              {t('footer.description')}
+              {getTranslatedText('footer.description', "Pakistan's leading agricultural marketplace connecting farmers with buyers.")}
             </p>
             <div className="flex space-x-4">
               <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} className="hover-glow">
@@ -38,46 +43,78 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">{t('footer.quickLinks.title')}</h4>
+            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">
+              {getTranslatedText('footer.quickLinks.title', 'Quick Links')}
+            </h4>
             <ul className="space-y-2 text-sm">
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/about" className="hover:text-white hover-lift inline-block">{t('footer.quickLinks.about')}</Link>
+                <Link to="/about" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.quickLinks.about', 'About Us')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/how-it-works" className="hover:text-white hover-lift inline-block">{t('footer.quickLinks.howItWorks')}</Link>
+                <Link to="/how-it-works" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.quickLinks.howItWorks', 'How It Works')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/safety-tips" className="hover:text-white hover-lift inline-block">{t('footer.quickLinks.safetyTips')}</Link>
+                <Link to="/safety-tips" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.quickLinks.safetyTips', 'Safety Tips')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/success-stories" className="hover:text-white hover-lift inline-block">{t('footer.quickLinks.successStories')}</Link>
+                <Link to="/success-stories" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.quickLinks.successStories', 'Success Stories')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/blog" className="hover:text-white hover-lift inline-block">{t('footer.quickLinks.blog')}</Link>
+                <Link to="/blog" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.quickLinks.blog', 'Blog')}
+                </Link>
               </motion.li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">{t('footer.support.title')}</h4>
+            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">
+              {getTranslatedText('footer.support.title', 'Support')}
+            </h4>
             <ul className="space-y-2 text-sm">
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/help" className="hover:text-white hover-lift inline-block">{t('footer.support.helpCenter')}</Link>
+                <Link to="/help" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.support.helpCenter', 'Help Center')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/terms" className="hover:text-white hover-lift inline-block">{t('footer.support.terms')}</Link>
+                <Link to="/terms" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.support.terms', 'Terms of Service')}
+                </Link>
               </motion.li>
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/privacy" className="hover:text-white hover-lift inline-block">{t('footer.support.privacy')}</Link>
+                <Link to="/privacy" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.support.privacy', 'Privacy Policy')}
+                </Link>
+              </motion.li>
+              <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Link to="/refund-policy" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.support.refundPolicy', 'Refund Policy')}
+                </Link>
+              </motion.li>
+              <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Link to="/shipping-policy" className="hover:text-white hover-lift inline-block">
+                  {getTranslatedText('footer.support.shippingPolicy', 'Shipping Policy')}
+                </Link>
               </motion.li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">{t('footer.contact.title')}</h4>
-            <ul className="space-y-3 text-sm">
+            <h4 className="text-lg font-semibold text-white mb-4 animate-pulse-slow">
+              {getTranslatedText('footer.contact.title', 'Contact')}
+            </h4>
+            <ul className="space-y-4 text-sm">
               <motion.li
                 className="flex items-center"
                 whileHover={{ scale: 1.03, x: 5 }}
@@ -91,7 +128,7 @@ const Footer = () => {
                 >
                   <Mail className="h-4 w-4 text-white" />
                 </motion.div>
-                {t('footer.contact.email')}
+                {getTranslatedText('footer.contact.email', 'support@kisanmarkaz.pk')}
               </motion.li>
               <motion.li
                 className="flex items-center"
@@ -100,13 +137,13 @@ const Footer = () => {
               >
                 <motion.div
                   className="bg-green-600/30 p-2 rounded-full mr-3 glass"
-                  whileHover={{ rotate: -10 }}
+                  whileHover={{ rotate: 10 }}
                   animate={{ y: [0, -2, 0] }}
                   transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
                 >
                   <Phone className="h-4 w-4 text-white" />
                 </motion.div>
-                {t('footer.contact.phone')}
+                {getTranslatedText('footer.contact.phone', '03213037082')}
               </motion.li>
               <motion.li
                 className="flex items-center"
@@ -121,7 +158,7 @@ const Footer = () => {
                 >
                   <MapPin className="h-4 w-4 text-white" />
                 </motion.div>
-                {t('footer.contact.address')}
+                {getTranslatedText('footer.contact.address', 'L-377, Sector-4, New Karachi')}
               </motion.li>
             </ul>
           </div>
@@ -136,7 +173,7 @@ const Footer = () => {
               animate={{ opacity: [0.8, 1, 0.8] }}
               transition={{ repeat: Infinity, duration: 3 }}
             >
-              {t('footer.copyright')}
+              {getTranslatedText('footer.copyright', '© 2024 Kisan Markaz. All rights reserved.')}
             </motion.p>
           </div>
         </div>
