@@ -40,21 +40,6 @@ const Index = () => {
         <HeroSection />
         <CategoryGrid />
         <FeaturedListings />
-        
-        {/* Scroll to top button */}
-        <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-8 right-8 p-3 bg-green-600 text-white rounded-full shadow-lg z-40"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m18 15-6-6-6 6"/>
-          </svg>
-        </motion.button>
       </Layout>
     </PageTransition>
   );
