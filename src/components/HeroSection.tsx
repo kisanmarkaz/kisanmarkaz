@@ -57,6 +57,7 @@ const HeroSection = () => {
             variants={slideUp}
             className="text-5xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-100"
           >
+            <span className="block text-7xl mb-2">KisanMarkaz</span>
             {t('hero.title')}
           </motion.h1>
           <motion.p 
