@@ -154,6 +154,22 @@ const Category = () => {
               </div>
             </div>
 
+            {/* Ad Script */}
+            <div className="w-full flex justify-center my-6">
+              <script type="text/javascript">
+                {`
+                  atOptions = {
+                    'key' : '34d1fef9c9edac7ad3838cd3262efda0',
+                    'format' : 'iframe',
+                    'height' : 60,
+                    'width' : 468,
+                    'params' : {}
+                  };
+                `}
+              </script>
+              <script type="text/javascript" src="//www.highperformanceformat.com/34d1fef9c9edac7ad3838cd3262efda0/invoke.js"></script>
+            </div>
+
             {/* Listings Grid */}
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
