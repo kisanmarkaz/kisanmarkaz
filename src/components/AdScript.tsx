@@ -1,7 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const AdScript = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Clear any existing ad containers and scripts
+    containerRef.current.innerHTML = '';
+
+    // Create container div for the ad
+    const adContainer = document.createElement('div');
+    adContainer.id = '_34d1fef9c9edac7ad3838cd3262efda0';
+    containerRef.current.appendChild(adContainer);
+
     // Create the first script element for options
     const atOptionsScript = document.createElement('script');
     atOptionsScript.type = 'text/javascript';
@@ -14,24 +26,26 @@ const AdScript = () => {
         'params' : {}
       };
     `;
-    document.body.appendChild(atOptionsScript);
+    containerRef.current.appendChild(atOptionsScript);
 
     // Create the second script element for the ad
     const adScript = document.createElement('script');
     adScript.type = 'text/javascript';
+    adScript.async = true;
     adScript.src = '//www.highperformanceformat.com/34d1fef9c9edac7ad3838cd3262efda0/invoke.js';
-    document.body.appendChild(adScript);
+    containerRef.current.appendChild(adScript);
 
-    // Cleanup function to remove scripts when component unmounts
+    // Cleanup function
     return () => {
-      document.body.removeChild(atOptionsScript);
-      document.body.removeChild(adScript);
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
     };
   }, []); // Empty dependency array means this runs once when component mounts
 
   return (
     <div className="w-full flex justify-center my-6">
-      <div id="ad-container"></div>
+      <div ref={containerRef} className="w-[468px] h-[60px]" />
     </div>
   );
 };
