@@ -61,7 +61,10 @@ const ListingDetail = () => {
           category:categories(*),
           subcategory:subcategories(*),
           user:profiles(*),
-          field_values:listing_field_values(*)
+          field_values:listing_field_values(
+            *,
+            field:category_fields(*)
+          )
         `)
         .eq('id', id)
         .single();
@@ -275,13 +278,14 @@ const ListingDetail = () => {
 
             {/* Additional Details */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+              <h2 className="text-xl font-semibold mb-4">Additional Details</h2>
               <div className="grid grid-cols-2 gap-4">
                 {listing.field_values?.map((fieldValue) => (
                   <div key={fieldValue.id}>
                     <span className="text-gray-500">{fieldValue.field?.field_label}:</span>
                     <span className="ml-2 text-gray-900">
                       {fieldValue.field?.field_type === 'boolean' 
-                        ? (fieldValue.field_value ? 'Yes' : 'No')
+                        ? (fieldValue.field_value === 'true' ? 'Yes' : 'No')
                         : fieldValue.field?.field_type === 'date'
                         ? format(new Date(fieldValue.field_value), 'MMM d, yyyy')
                         : fieldValue.field_value}

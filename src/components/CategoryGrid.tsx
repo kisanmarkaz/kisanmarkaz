@@ -22,31 +22,6 @@ const CategoryGrid = () => {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
-  // Add irrigation categories if they don't exist
-  const irrigationCategories = [
-    {
-      id: 'rain-fed',
-      name: 'Rain-fed',
-      slug: 'rain-fed',
-      description: 'Rain-fed agricultural land and farming',
-      icon: 'Droplets',
-      subcategories: []
-    },
-    {
-      id: 'canal',
-      name: 'Canal',
-      slug: 'canal',
-      description: 'Canal-irrigated agricultural land and farming',
-      icon: 'Droplets',
-      subcategories: []
-    }
-  ];
-
-  const allCategories = categories?.length ? 
-    categories.filter(cat => !irrigationCategories.find(ic => ic.slug === cat.slug))
-      .concat(irrigationCategories) : 
-    irrigationCategories;
-
   if (isLoading) {
     return (
       <section className="py-16 bg-gray-50">
@@ -90,7 +65,7 @@ const CategoryGrid = () => {
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {allCategories?.map((category, index) => {
+          {categories?.map((category, index) => {
             const IconComponent = iconMap[category.icon as keyof typeof iconMap] || Droplets;
             return (
               <motion.div
