@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Beef, Wheat, Tractor, Home, Truck, Wrench, Droplets, TreePine } from 'lucide-react';
@@ -22,6 +21,31 @@ const CategoryGrid = () => {
   const { data: categories, isLoading } = useCategories();
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  // Add irrigation categories if they don't exist
+  const irrigationCategories = [
+    {
+      id: 'rain-fed',
+      name: 'Rain-fed',
+      slug: 'rain-fed',
+      description: 'Rain-fed agricultural land and farming',
+      icon: 'Droplets',
+      subcategories: []
+    },
+    {
+      id: 'canal',
+      name: 'Canal',
+      slug: 'canal',
+      description: 'Canal-irrigated agricultural land and farming',
+      icon: 'Droplets',
+      subcategories: []
+    }
+  ];
+
+  const allCategories = categories?.length ? 
+    categories.filter(cat => !irrigationCategories.find(ic => ic.slug === cat.slug))
+      .concat(irrigationCategories) : 
+    irrigationCategories;
 
   if (isLoading) {
     return (
@@ -66,8 +90,8 @@ const CategoryGrid = () => {
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {categories?.map((category, index) => {
-            const IconComponent = iconMap[category.icon as keyof typeof iconMap] || Beef;
+          {allCategories?.map((category, index) => {
+            const IconComponent = iconMap[category.icon as keyof typeof iconMap] || Droplets;
             return (
               <motion.div
                 key={category.id}
@@ -99,21 +123,9 @@ const CategoryGrid = () => {
                       <p className="text-sm text-gray-500">{category.subcategories?.length || 0} subcategories</p>
                     </div>
                   </div>
-                  
-                  <div className="space-y-1">
-                    {category.subcategories?.slice(0, 3).map((sub) => (
-                      <p key={sub.id} className="text-xs text-gray-600">{sub.name}</p>
-                    ))}
-                    {(category.subcategories?.length || 0) > 3 && (
-                      <motion.p 
-                        className="text-xs text-green-600"
-                        animate={{ x: [0, 3, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-                      >
-                        +{(category.subcategories?.length || 0) - 3} more
-                      </motion.p>
-                    )}
-                  </div>
+                  {category.description && (
+                    <p className="text-sm text-gray-500 line-clamp-2">{category.description}</p>
+                  )}
                 </Link>
               </motion.div>
             );

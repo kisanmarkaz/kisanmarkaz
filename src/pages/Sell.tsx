@@ -19,6 +19,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import IrrigationCategoryFields from '@/components/IrrigationCategoryFields';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -476,92 +477,103 @@ const Sell = () => {
                   <CardDescription>Additional information specific to this category</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {fields.map((field) => {
-                    console.log('Rendering field:', field);
-                    return (
-                      <div key={field.id}>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {field.field_label}
-                          {field.required && <span className="text-red-500 ml-1">*</span>}
-                        </label>
-                        
-                        {field.field_type === 'text' && (
-                          <Input
-                            value={categoryFields[field.field_name] || ''}
-                            onChange={(e) => setCategoryFields(prev => ({
-                              ...prev,
-                              [field.field_name]: e.target.value
-                            }))}
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.field_type === 'number' && (
-                          <Input
-                            type="number"
-                            value={categoryFields[field.field_name] || ''}
-                            onChange={(e) => setCategoryFields(prev => ({
-                              ...prev,
-                              [field.field_name]: e.target.value
-                            }))}
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.field_type === 'select' && field.field_options?.options && (
-                          <Select
-                            value={categoryFields[field.field_name] || ''}
-                            onValueChange={(value) => setCategoryFields(prev => ({
-                              ...prev,
-                              [field.field_name]: value
-                            }))}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder={`Select ${field.field_label.toLowerCase()}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {field.field_options.options.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-
-                        {field.field_type === 'date' && (
-                          <Input
-                            type="date"
-                            value={categoryFields[field.field_name] || ''}
-                            onChange={(e) => setCategoryFields(prev => ({
-                              ...prev,
-                              [field.field_name]: e.target.value
-                            }))}
-                            required={field.required}
-                          />
-                        )}
-
-                        {field.field_type === 'boolean' && (
-                          <div className="flex items-center space-x-2">
-                            <Checkbox
-                              id={field.field_name}
-                              checked={categoryFields[field.field_name] || false}
-                              onCheckedChange={(checked) => setCategoryFields(prev => ({
+                  {selectedCategory && ['rain-fed', 'canal'].includes(selectedCategory) ? (
+                    <IrrigationCategoryFields
+                      categorySlug={selectedCategory}
+                      values={categoryFields}
+                      onChange={(fieldName, value) => setCategoryFields(prev => ({
+                        ...prev,
+                        [fieldName]: value
+                      }))}
+                    />
+                  ) : (
+                    fields.map((field) => {
+                      console.log('Rendering field:', field);
+                      return (
+                        <div key={field.id}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {field.field_label}
+                            {field.required && <span className="text-red-500 ml-1">*</span>}
+                          </label>
+                          
+                          {field.field_type === 'text' && (
+                            <Input
+                              value={categoryFields[field.field_name] || ''}
+                              onChange={(e) => setCategoryFields(prev => ({
                                 ...prev,
-                                [field.field_name]: checked
+                                [field.field_name]: e.target.value
                               }))}
+                              required={field.required}
                             />
-                            <label
-                              htmlFor={field.field_name}
-                              className="text-sm text-gray-600"
+                          )}
+
+                          {field.field_type === 'number' && (
+                            <Input
+                              type="number"
+                              value={categoryFields[field.field_name] || ''}
+                              onChange={(e) => setCategoryFields(prev => ({
+                                ...prev,
+                                [field.field_name]: e.target.value
+                              }))}
+                              required={field.required}
+                            />
+                          )}
+
+                          {field.field_type === 'select' && field.field_options?.options && (
+                            <Select
+                              value={categoryFields[field.field_name] || ''}
+                              onValueChange={(value) => setCategoryFields(prev => ({
+                                ...prev,
+                                [field.field_name]: value
+                              }))}
                             >
-                              Yes
-                            </label>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                              <SelectTrigger>
+                                <SelectValue placeholder={`Select ${field.field_label.toLowerCase()}`} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {field.field_options.options.map((option) => (
+                                  <SelectItem key={option} value={option}>
+                                    {option}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+
+                          {field.field_type === 'date' && (
+                            <Input
+                              type="date"
+                              value={categoryFields[field.field_name] || ''}
+                              onChange={(e) => setCategoryFields(prev => ({
+                                ...prev,
+                                [field.field_name]: e.target.value
+                              }))}
+                              required={field.required}
+                            />
+                          )}
+
+                          {field.field_type === 'boolean' && (
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={field.field_name}
+                                checked={categoryFields[field.field_name] || false}
+                                onCheckedChange={(checked) => setCategoryFields(prev => ({
+                                  ...prev,
+                                  [field.field_name]: checked
+                                }))}
+                              />
+                              <label
+                                htmlFor={field.field_name}
+                                className="text-sm text-gray-600"
+                              >
+                                Yes
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </CardContent>
               </Card>
             )}
