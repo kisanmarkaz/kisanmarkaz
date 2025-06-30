@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AnimatePresence } from "framer-motion";
 import ScrollToTop from "./components/ScrollToTop";
+import GlobalScrollAnimations from "./components/GlobalScrollAnimations";
 import Index from "./pages/Index";
 import Category from "./pages/Category";
 import Sell from "./pages/Sell";
@@ -79,6 +80,7 @@ const App = () => {
           <LanguageProvider>
             <TooltipProvider>
               <ScrollToTop />
+              <GlobalScrollAnimations />
               <AnimatedRoutes />
               <Toaster />
               <Sonner />
