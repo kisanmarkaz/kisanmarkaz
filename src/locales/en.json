@@ -28,7 +28,8 @@
     "categories": {
       "livestock": "Livestock",
       "crops": "Crops",
-      "equipment": "Equipment"
+      "equipment": "Equipment",
+      "services": "Services"
     },
     "buttons": {
       "startBuying": "Start Buying",
@@ -118,5 +119,54 @@
     "add": "Add to Favorites",
     "removed": "Removed from favorites",
     "added": "Added to favorites"
+  },
+  "services": {
+    "title": "Agricultural Services",
+    "description": "Find and offer agricultural services across Pakistan",
+    "categories": {
+      "tractor_rental": "Tractor Rental",
+      "harvesting": "Harvesting Services",
+      "spraying": "Spraying Services",
+      "labor": "Farm Labor",
+      "transport": "Transport Services",
+      "consultancy": "Agricultural Consultancy",
+      "equipment_rental": "Equipment Rental",
+      "other": "Other Services"
+    },
+    "form": {
+      "title": "Service Title",
+      "description": "Service Description",
+      "category": "Service Category",
+      "price": "Price",
+      "priceUnit": {
+        "per_hour": "Per Hour",
+        "per_day": "Per Day",
+        "per_acre": "Per Acre",
+        "fixed": "Fixed Price"
+      },
+      "location": "Service Location",
+      "contact": "Contact Information",
+      "submit": "Post Service",
+      "success": "Service posted successfully",
+      "error": "Failed to post service"
+    },
+    "filters": {
+      "title": "Filter Services",
+      "category": "Category",
+      "location": "Location",
+      "priceRange": "Price Range",
+      "sortBy": {
+        "title": "Sort By",
+        "newest": "Newest First",
+        "oldest": "Oldest First",
+        "priceHighToLow": "Price: High to Low",
+        "priceLowToHigh": "Price: Low to High"
+      }
+    },
+    "empty": {
+      "title": "No Services Found",
+      "description": "No services match your search criteria",
+      "postService": "Post a Service"
+    }
   }
 }

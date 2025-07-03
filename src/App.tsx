@@ -32,6 +32,8 @@ import Messages from "./pages/Messages";
 import Conversation from "./pages/Conversation";
 import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
+import Services from "./pages/Services";
+import NewService from "./pages/NewService";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +67,8 @@ const AnimatedRoutes = () => {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/services/new" element={<NewService />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -24,7 +24,8 @@
     "categories": {
       "livestock": "مویشی",
       "crops": "فصلیں",
-      "equipment": "آلات"
+      "equipment": "آلات",
+      "services": "خدمات"
     },
     "buttons": {
       "startBuying": "خریداری شروع کریں",
@@ -94,6 +95,55 @@
       "languageUpdateError": "زبان تبدیل کرنے میں ناکام۔ دوبارہ کوشش کریں۔",
       "updated": "آپ کی ترجیحات محفوظ کر دی گئی ہیں۔",
       "updateError": "ترجیحات اپ ڈیٹ کرنے میں ناکام۔"
+    }
+  },
+  "services": {
+    "title": "زرعی خدمات",
+    "description": "پورے پاکستان میں زرعی خدمات تلاش کریں اور پیش کریں",
+    "categories": {
+      "tractor_rental": "ٹریکٹر کرایہ",
+      "harvesting": "فصل کی کٹائی",
+      "spraying": "سپرے کی خدمات",
+      "labor": "کھیتی کے مزدور",
+      "transport": "ٹرانسپورٹ کی خدمات",
+      "consultancy": "زرعی مشاورت",
+      "equipment_rental": "آلات کرایہ",
+      "other": "دیگر خدمات"
+    },
+    "form": {
+      "title": "خدمت کا عنوان",
+      "description": "خدمت کی تفصیل",
+      "category": "خدمت کی قسم",
+      "price": "قیمت",
+      "priceUnit": {
+        "per_hour": "فی گھنٹہ",
+        "per_day": "فی دن",
+        "per_acre": "فی ایکڑ",
+        "fixed": "مقررہ قیمت"
+      },
+      "location": "خدمت کا مقام",
+      "contact": "رابطے کی معلومات",
+      "submit": "خدمت پوسٹ کریں",
+      "success": "خدمت کامیابی سے پوسٹ کر دی گئی",
+      "error": "خدمت پوسٹ کرنے میں ناکام"
+    },
+    "filters": {
+      "title": "خدمات کی فلٹر",
+      "category": "قسم",
+      "location": "مقام",
+      "priceRange": "قیمت کی حد",
+      "sortBy": {
+        "title": "ترتیب دیں",
+        "newest": "تازہ ترین پہلے",
+        "oldest": "پرانی پہلے",
+        "priceHighToLow": "قیمت: زیادہ سے کم",
+        "priceLowToHigh": "قیمت: کم سے زیادہ"
+      }
+    },
+    "empty": {
+      "title": "کوئی خدمات نہیں ملیں",
+      "description": "آپ کے تلاش کے معیار سے مطابقت رکھنے والی کوئی خدمات نہیں ہیں",
+      "postService": "خدمت پوسٹ کریں"
     }
   }
 }

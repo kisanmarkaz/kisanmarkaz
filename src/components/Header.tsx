@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, User, Plus, Menu, Heart, MessageCircle, Settings, ChevronDown } from 'lucide-react';
+import { Search, MapPin, User, Plus, Menu, Heart, MessageCircle, Settings, ChevronDown, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -80,6 +80,12 @@ const Header = () => {
               <MapPin className="h-4 w-4 mr-1" />
               {t('common.country')}
             </motion.span>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Link to="/services" className="flex items-center hover:text-green-200 transition-colors duration-200">
+                <Wrench className="h-4 w-4 mr-1" />
+                {t('common.services')}
+              </Link>
+            </motion.div>
           </motion.div>
           <motion.div
             variants={slideInRight}
