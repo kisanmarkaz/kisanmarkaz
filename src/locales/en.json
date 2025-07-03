@@ -20,7 +20,9 @@
     "loading": "Loading...",
     "delete": "Delete",
     "edit": "Edit",
-    "view": "View"
+    "view": "View",
+    "categories": "Categories",
+    "services": "Services"
   },
   "hero": {
     "title": "Pakistan's #1 Agricultural Marketplace",

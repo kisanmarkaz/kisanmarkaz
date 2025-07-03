@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, User, Plus, Menu, Heart, MessageCircle, Settings, ChevronDown, Wrench } from 'lucide-react';
+import { Search, MapPin, User, Plus, Menu, Heart, MessageCircle, Settings, ChevronDown, Wrench, Grid } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, slideInLeft, slideInRight, slideUp } from '@/lib/animations';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useCategories } from '@/hooks/useCategories';
 import Logo from './Logo';
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ const Header = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const { data: favorites = [] } = useFavorites();
+  const { data: categories = [] } = useCategories();
 
   // Add scroll effect
   useEffect(() => {
@@ -67,36 +69,12 @@ const Header = () => {
         {/* Top bar */}
         <motion.div
           variants={slideUp}
-          className="flex items-center justify-between py-2 text-sm border-b border-green-500"
+          className="flex items-center justify-end py-2 text-sm border-b border-green-500"
         >
-          <motion.div
-            variants={slideInLeft}
-            className="flex items-center space-x-4"
-          >
-            <motion.span
-              className="flex items-center"
-              whileHover={{ scale: 1.05 }}
-            >
-              <MapPin className="h-4 w-4 mr-1" />
-              {t('common.country')}
-            </motion.span>
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link to="/services" className="flex items-center hover:text-green-200 transition-colors duration-200">
-                <Wrench className="h-4 w-4 mr-1" />
-                {t('common.services')}
-              </Link>
-            </motion.div>
-          </motion.div>
           <motion.div
             variants={slideInRight}
             className="flex items-center space-x-4"
           >
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link to="/chat" className="flex items-center hover:text-green-200 transition-colors duration-200">
-                <MessageCircle className="h-4 w-4 mr-1" />
-                {t('common.chat')}
-              </Link>
-            </motion.div>
             {user ? (
               <>
                 <motion.div whileHover={{ scale: 1.05 }}>
@@ -195,6 +173,22 @@ const Header = () => {
             variants={slideInRight}
             className="flex items-center space-x-4"
           >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-white hover:text-green-200">
+                  <Grid className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                {categories.map((category) => (
+                  <DropdownMenuItem key={category.id} asChild>
+                    <Link to={`/category/${category.slug}`} className="w-full">
+                      {category.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link to="/favorites">
                 <Button variant="ghost" className="text-white hover:text-green-200 transition-colors duration-200 relative">
