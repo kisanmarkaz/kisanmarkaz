@@ -273,6 +273,12 @@ const ListingDetail = () => {
               </div>
             </div>
 
+            {/* Description */}
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+              <h2 className="text-xl font-semibold mb-4">Description</h2>
+              <p className="text-gray-700 whitespace-pre-wrap">{listing.description}</p>
+            </div>
+
             {/* Ad Script */}
             <AdScript />
 
