@@ -28,7 +28,8 @@
     "categories": {
       "livestock": "مویشی",
       "crops": "فصلیں",
-      "equipment": "آلات"
+      "equipment": "آلات",
+      "services": "خدمات"
     },
     "buttons": {
       "startBuying": "خریداری شروع کریں",
@@ -42,7 +43,9 @@
       "punjab": "پنجاب",
       "sindh": "سندھ",
       "kpk": "خیبر پختونخوا",
-      "balochistan": "بلوچستان"
+      "balochistan": "بلوچستان",
+      "selectCity": "شہر منتخب کریں",
+      "allCities": "تمام شہر"
     }
   },
   "footer": {

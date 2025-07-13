@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// Define city options for each province
+const cityOptions = {
+  punjab: ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot'],
+  sindh: ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Mirpur Khas'],
+  kpk: ['Peshawar', 'Mardan', 'Abbottabad', 'Mingora', 'Kohat'],
+  balochistan: ['Quetta', 'Gwadar', 'Turbat', 'Khuzdar', 'Chaman'],
+};
+
 export const Search: React.FC = () => {
   const { t } = useLanguage();
+  const [selectedProvince, setSelectedProvince] = useState<string>('all');
+  const [selectedCity, setSelectedCity] = useState<string>('all');
+
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvince(value);
+    setSelectedCity('all'); // Reset city when province changes
+  };
 
   return (
     <motion.div 
@@ -34,7 +49,7 @@ export const Search: React.FC = () => {
         </div>
       </div>
       
-      <Select>
+      <Select value={selectedProvince} onValueChange={handleProvinceChange}>
         <SelectTrigger className="w-full sm:w-[200px] glass-input bg-white/30 text-white border-white/20">
           <SelectValue placeholder={t('search.locations.all')} />
         </SelectTrigger>
@@ -46,6 +61,23 @@ export const Search: React.FC = () => {
           <SelectItem value="balochistan">{t('search.locations.balochistan')}</SelectItem>
         </SelectContent>
       </Select>
+
+      <Select 
+        value={selectedCity} 
+        onValueChange={setSelectedCity}
+        disabled={selectedProvince === 'all'}
+      >
+        <SelectTrigger className="w-full sm:w-[200px] glass-input bg-white/30 text-white border-white/20">
+          <SelectValue placeholder={t('search.locations.selectCity')} />
+        </SelectTrigger>
+        <SelectContent className="glass-card bg-white/90 backdrop-blur-md">
+          <SelectItem value="all">{t('search.locations.allCities')}</SelectItem>
+          {selectedProvince !== 'all' && cityOptions[selectedProvince as keyof typeof cityOptions].map((city) => (
+            <SelectItem key={city} value={city.toLowerCase()}>{city}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
         <Button 
           type="submit" 

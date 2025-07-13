@@ -11,6 +11,12 @@ export function useListings(filters?: {
   featured?: boolean;
   searchQuery?: string;
   sortBy?: 'newest' | 'oldest' | 'price-low' | 'price-high';
+  condition?: 'new' | 'excellent' | 'good' | 'fair' | 'poor';
+  deliveryAvailable?: boolean;
+  paymentTerms?: 'advance' | 'partial' | 'delivery' | 'credit';
+  organic?: boolean;
+  quantityMin?: number;
+  quantityMax?: number;
 }) {
   return useQuery({
     queryKey: ['listings', filters],
@@ -47,6 +53,26 @@ export function useListings(filters?: {
       }
       if (filters?.featured) {
         query = query.eq('featured', true);
+      }
+      
+      // New filters
+      if (filters?.condition) {
+        query = query.eq('condition', filters.condition);
+      }
+      if (filters?.deliveryAvailable !== undefined) {
+        query = query.eq('delivery_available', filters.deliveryAvailable ? 'yes' : 'no');
+      }
+      if (filters?.paymentTerms) {
+        query = query.eq('payment_terms', filters.paymentTerms);
+      }
+      if (filters?.organic !== undefined) {
+        query = query.eq('organic', filters.organic ? 'yes' : 'no');
+      }
+      if (filters?.quantityMin) {
+        query = query.gte('quantity', filters.quantityMin);
+      }
+      if (filters?.quantityMax) {
+        query = query.lte('quantity', filters.quantityMax);
       }
 
       // Apply sorting

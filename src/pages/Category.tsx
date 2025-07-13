@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Filter, Grid, List, MapPin, Calendar, Heart } from 'lucide-react';
+import { Filter, Grid, List, MapPin, Calendar, Heart, Truck, CreditCard, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -19,6 +19,12 @@ const Category = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
+  const [condition, setCondition] = useState<string>('all');
+  const [deliveryAvailable, setDeliveryAvailable] = useState<string>('all');
+  const [paymentTerms, setPaymentTerms] = useState<string>('all');
+  const [organic, setOrganic] = useState<string>('all');
+  const [quantityMin, setQuantityMin] = useState('');
+  const [quantityMax, setQuantityMax] = useState('');
 
   const { data: categories } = useCategories();
   const category = categories?.find(cat => cat.slug === categoryId);
@@ -28,7 +34,13 @@ const Category = () => {
     categoryId: category?.id,
     subcategoryId: selectedSubcategory === 'all' ? undefined : selectedSubcategory,
     priceMin: priceMin ? parseFloat(priceMin) : undefined,
-    priceMax: priceMax ? parseFloat(priceMax) : undefined
+    priceMax: priceMax ? parseFloat(priceMax) : undefined,
+    condition: condition === 'all' ? undefined : condition as any,
+    deliveryAvailable: deliveryAvailable === 'all' ? undefined : deliveryAvailable === 'yes',
+    paymentTerms: paymentTerms === 'all' ? undefined : paymentTerms as any,
+    organic: organic === 'all' ? undefined : organic === 'yes',
+    quantityMin: quantityMin ? parseFloat(quantityMin) : undefined,
+    quantityMax: quantityMax ? parseFloat(quantityMax) : undefined
   });
 
   const { data: favorites } = useFavorites();
@@ -75,6 +87,24 @@ const Category = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </h3>
+
+              {/* Subcategories */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Subcategory
+                </label>
+                <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All subcategories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All subcategories</SelectItem>
+                    {subcategories?.map((sub) => (
+                      <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               
               {/* Price Range */}
               <div className="mb-6">
@@ -95,22 +125,99 @@ const Category = () => {
                 </div>
               </div>
 
-              {/* Subcategories */}
+              {/* Condition */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subcategory
+                  Condition
                 </label>
-                <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
+                <Select value={condition} onValueChange={setCondition}>
                   <SelectTrigger>
-                    <SelectValue placeholder="All subcategories" />
+                    <SelectValue placeholder="All conditions" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All subcategories</SelectItem>
-                    {subcategories?.map((sub) => (
-                      <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
-                    ))}
+                    <SelectItem value="all">All conditions</SelectItem>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="excellent">Excellent</SelectItem>
+                    <SelectItem value="good">Good</SelectItem>
+                    <SelectItem value="fair">Fair</SelectItem>
+                    <SelectItem value="poor">Poor</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Delivery */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Truck className="h-4 w-4 mr-2" />
+                  Delivery Available
+                </label>
+                <Select value={deliveryAvailable} onValueChange={setDeliveryAvailable}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All options" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All options</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Payment Terms */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Payment Terms
+                </label>
+                <Select value={paymentTerms} onValueChange={setPaymentTerms}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All terms" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All terms</SelectItem>
+                    <SelectItem value="advance">Advance payment</SelectItem>
+                    <SelectItem value="partial">Partial payment</SelectItem>
+                    <SelectItem value="delivery">Pay on delivery</SelectItem>
+                    <SelectItem value="credit">Credit terms</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Organic Status */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Leaf className="h-4 w-4 mr-2" />
+                  Organic Status
+                </label>
+                <Select value={organic} onValueChange={setOrganic}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="yes">Organic</SelectItem>
+                    <SelectItem value="no">Non-organic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Quantity Range */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quantity Range
+                </label>
+                <div className="flex space-x-2">
+                  <Input 
+                    placeholder="Min quantity" 
+                    value={quantityMin}
+                    onChange={(e) => setQuantityMin(e.target.value)}
+                  />
+                  <Input 
+                    placeholder="Max quantity"
+                    value={quantityMax}
+                    onChange={(e) => setQuantityMax(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -124,7 +231,10 @@ const Category = () => {
               </div>
               
               <div className="flex items-center space-x-4">
-                <Select value={sortBy} onValueChange={setSortBy}>
+                <Select 
+                  value={sortBy} 
+                  onValueChange={(value) => setSortBy(value)}
+                >
                   <SelectTrigger className="w-48">
                     <SelectValue />
                   </SelectTrigger>
@@ -207,24 +317,21 @@ const Category = () => {
                         )}
                       </div>
                       <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                            {listing.category?.name}
-                          </span>
-                          <span className="text-lg font-bold text-green-600">
-                            Rs {listing.price?.toLocaleString()}
-                          </span>
-                        </div>
-                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
-                          {listing.title}
-                        </h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{listing.title}</h3>
                         <div className="flex items-center text-sm text-gray-500 mb-2">
                           <MapPin className="h-4 w-4 mr-1" />
                           {listing.location_city}, {listing.location_province}
                         </div>
-                        <div className="flex items-center text-xs text-gray-400">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {format(new Date(listing.created_at), 'MMM d, yyyy')}
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-green-600">
+                            PKR {listing.price.toLocaleString()}
+                          </span>
+                          {listing.delivery_available === 'yes' && (
+                            <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full flex items-center">
+                              <Truck className="h-3 w-3 mr-1" />
+                              Delivery
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

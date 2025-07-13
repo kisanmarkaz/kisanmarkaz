@@ -23,12 +23,13 @@
     "view": "View"
   },
   "hero": {
-    "title": "Pakistan's #1 Agricultural Marketplace",
+    "title": "Pakistan First Agricultural Marketplace",
     "description": "Buy and sell agricultural products, livestock, equipment, and land across Pakistan",
     "categories": {
       "livestock": "Livestock",
       "crops": "Crops",
-      "equipment": "Equipment"
+      "equipment": "Equipment",
+      "services": "Services"
     },
     "buttons": {
       "startBuying": "Start Buying",
@@ -42,7 +43,9 @@
       "punjab": "Punjab",
       "sindh": "Sindh",
       "kpk": "KPK",
-      "balochistan": "Balochistan"
+      "balochistan": "Balochistan",
+      "selectCity": "Select City",
+      "allCities": "All Cities"
     }
   },
   "footer": {

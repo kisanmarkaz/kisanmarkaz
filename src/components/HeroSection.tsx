@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Tractor, Wheat, Beef } from 'lucide-react';
+import { ArrowRight, Tractor, Wheat, Beef, Wrench } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fadeIn, slideUp, staggerContainer, slideInLeft, slideInRight } from '@/lib/animations';
-import { Search } from '@/components/Search';
 import { Link } from 'react-router-dom';
 import ScrollReveal from './ScrollReveal';
 
@@ -17,7 +16,8 @@ const HeroSection = () => {
   const categories = [
     { name: t('hero.categories.livestock'), icon: Beef },
     { name: t('hero.categories.crops'), icon: Wheat },
-    { name: t('hero.categories.equipment'), icon: Tractor }
+    { name: t('hero.categories.equipment'), icon: Tractor },
+    { name: t('hero.categories.services'), icon: Wrench }
   ];
 
   // Rotate through categories more quickly
@@ -98,7 +98,7 @@ const HeroSection = () => {
             >
               <span className="block text-7xl mb-2">KisanMarkaz</span>
               <div className="flex items-center justify-center">
-                <span className="inline-block">Pakistan's #1</span>{" "}
+                <span className="inline-block">Pakistan First</span>{" "}
                 <div className="inline-block h-20 overflow-hidden relative flex items-center" style={{ minWidth: "350px", transform: "translateY(2px)" }}>
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
@@ -115,6 +115,14 @@ const HeroSection = () => {
                   </AnimatePresence>
                 </div>
               </div>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+                className="mt-2"
+              >
+                Platform
+              </motion.div>
             </motion.h1>
           </ScrollReveal>
           
@@ -210,12 +218,6 @@ const HeroSection = () => {
                 </Link>
               </motion.div>
             </motion.div>
-          </ScrollReveal>
-
-          <ScrollReveal variant="fadeIn" delay={0.4} threshold={0.2}>
-            <div className="mt-8">
-              <Search />
-            </div>
           </ScrollReveal>
         </motion.div>
       </div>

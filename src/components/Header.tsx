@@ -19,8 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// Define city options for each province
+const cityOptions = {
+  punjab: ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot'],
+  sindh: ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Mirpur Khas'],
+  kpk: ['Peshawar', 'Mardan', 'Abbottabad', 'Mingora', 'Kohat'],
+  balochistan: ['Quetta', 'Gwadar', 'Turbat', 'Khuzdar', 'Chaman'],
+};
+
 const Header = () => {
-  const { searchQuery, setSearchQuery, searchLocation, setSearchLocation, handleSearch } = useSearch();
+  const { searchQuery, setSearchQuery, searchLocation, setSearchLocation, searchCity, setSearchCity, handleSearch } = useSearch();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user } = useAuth();
@@ -55,6 +63,12 @@ const Header = () => {
     setSearchQuery(suggestion);
     handleSearch();
     setShowSuggestions(false);
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value.toLowerCase();
+    setSearchLocation(value);
+    setSearchCity('all'); // Reset city when location changes
   };
 
   return (
@@ -128,14 +142,28 @@ const Header = () => {
                 <select
                   className="border-0 bg-transparent text-white text-sm focus:outline-none"
                   value={searchLocation}
-                  onChange={(e) => setSearchLocation(e.target.value)}
+                  onChange={handleLocationChange}
                 >
                   <option value="all" className="text-gray-800">{t('search.locations.all')}</option>
-                  <option value="Punjab" className="text-gray-800">{t('search.locations.punjab')}</option>
-                  <option value="Sindh" className="text-gray-800">{t('search.locations.sindh')}</option>
-                  <option value="KPK" className="text-gray-800">{t('search.locations.kpk')}</option>
-                  <option value="Balochistan" className="text-gray-800">{t('search.locations.balochistan')}</option>
+                  <option value="punjab" className="text-gray-800">{t('search.locations.punjab')}</option>
+                  <option value="sindh" className="text-gray-800">{t('search.locations.sindh')}</option>
+                  <option value="kpk" className="text-gray-800">{t('search.locations.kpk')}</option>
+                  <option value="balochistan" className="text-gray-800">{t('search.locations.balochistan')}</option>
                 </select>
+                {searchLocation !== 'all' && (
+                  <select
+                    className="border-0 bg-transparent text-white text-sm focus:outline-none ml-2 border-l border-white/30 pl-2"
+                    value={searchCity}
+                    onChange={(e) => setSearchCity(e.target.value)}
+                  >
+                    <option value="all" className="text-gray-800">{t('search.locations.allCities')}</option>
+                    {cityOptions[searchLocation as keyof typeof cityOptions]?.map((city) => (
+                      <option key={city} value={city.toLowerCase()} className="text-gray-800">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
