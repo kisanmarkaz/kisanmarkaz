@@ -31,6 +31,7 @@ const Header = () => {
   const { searchQuery, setSearchQuery, searchLocation, setSearchLocation, searchCity, setSearchCity, handleSearch } = useSearch();
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user } = useAuth();
   const { t } = useLanguage();
   const { data: favorites = [] } = useFavorites();
@@ -110,19 +111,34 @@ const Header = () => {
         </motion.div>
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-4">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Logo size="md" />
-          </motion.div>
+        <div className="flex items-center justify-between py-4 gap-4">
+          <div className="flex items-center gap-4">
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                className="relative w-8 h-8 flex flex-col justify-center items-center group"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+              </button>
+            </div>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Logo size="md" />
+            </motion.div>
+          </div>
 
           {/* Search bar */}
           <motion.form
             variants={fadeIn}
             onSubmit={handleSubmit}
-            className="flex-1 max-w-2xl mx-8 relative"
+            className="flex flex-1 max-w-2xl mx-0 md:mx-8 relative order-3 md:order-none w-full md:w-auto mt-4 md:mt-0"
           >
             <div className="relative flex shadow-xl rounded-lg overflow-hidden glass-input">
               <Input
@@ -196,10 +212,10 @@ const Header = () => {
             </AnimatePresence>
           </motion.form>
 
-          {/* Action buttons */}
+          {/* Action buttons - mobile and desktop */}
           <motion.div
             variants={slideInRight}
-            className="flex items-center space-x-4"
+            className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-16 right-4 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50`}
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

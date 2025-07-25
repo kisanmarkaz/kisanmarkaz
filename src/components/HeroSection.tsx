@@ -94,12 +94,12 @@ const HeroSection = () => {
           <ScrollReveal variant="slideUp" threshold={0.2}>
             <motion.h1 
               variants={slideUp}
-              className="text-5xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-100"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-100"
             >
-              <span className="block text-7xl mb-2">KisanMarkaz</span>
-              <div className="flex items-center justify-center">
-                <span className="inline-block">Pakistan First</span>{" "}
-                <div className="inline-block h-20 overflow-hidden relative flex items-center" style={{ minWidth: "350px", transform: "translateY(2px)" }}>
+              <span className="block text-5xl sm:text-6xl md:text-7xl mb-1 sm:mb-2">KisanMarkaz</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+                <span className="inline-block">Pakistan First</span>
+                <div className="inline-block h-16 sm:h-20 overflow-hidden relative flex items-center min-w-[200px] sm:min-w-[350px]" style={{ transform: "translateY(2px)" }}>
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div
                       key={categoryIndex}
@@ -129,7 +129,7 @@ const HeroSection = () => {
           <ScrollReveal variant="fadeIn" delay={0.2} threshold={0.2}>
             <motion.p 
               variants={slideUp}
-              className="text-xl mb-10 text-emerald-100"
+              className="text-lg sm:text-xl mb-8 sm:mb-10 text-emerald-100"
             >
               {t('hero.description')}
             </motion.p>
@@ -137,7 +137,7 @@ const HeroSection = () => {
           
           <motion.div 
             variants={staggerContainer}
-            className="flex flex-wrap justify-center gap-8 mb-12"
+            className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 mb-12"
           >
             {categories.map((category, index) => {
               const Icon = category.icon;
@@ -158,7 +158,7 @@ const HeroSection = () => {
                       boxShadow: ["0 4px 6px rgba(0,0,0,0.1)", "0 10px 15px rgba(0,0,0,0.2)", "0 4px 6px rgba(0,0,0,0.1)"]
                     } : {}}
                     transition={isActive ? { duration: 1, repeat: Infinity } : {}}
-                    className={`flex items-center text-white backdrop-blur-md ${isActive ? 'bg-white/30' : 'bg-white/10'} px-5 py-3 rounded-full shadow-lg hover:shadow-xl border ${isActive ? 'border-yellow-300/50' : 'border-white/20'} hover:border-white/40 transition-all duration-200`}
+                    className={`flex items-center text-white backdrop-blur-md ${isActive ? 'bg-white/30' : 'bg-white/10'} px-3 sm:px-4 md:px-5 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-xl border ${isActive ? 'border-yellow-300/50' : 'border-white/20'} hover:border-white/40 transition-all duration-200 w-full sm:w-auto`}
                   >
                     <motion.div
                       animate={{ rotate: [0, index % 2 === 0 ? 10 : -10, 0] }}
@@ -176,7 +176,7 @@ const HeroSection = () => {
           <ScrollReveal variant="slideUp" delay={0.3} threshold={0.2}>
             <motion.div 
               variants={slideUp}
-              className="flex flex-wrap justify-center gap-4"
+              className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto"
             >
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -206,7 +206,7 @@ const HeroSection = () => {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="bg-white/10 backdrop-blur-md border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 shadow-lg hover:shadow-yellow-500/30 transition-all duration-300"
+                    className="w-full sm:w-auto bg-white/10 backdrop-blur-md border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 shadow-lg hover:shadow-yellow-500/30 transition-all duration-300"
                   >
                     <motion.span
                       animate={{ scale: [1, 1.05, 1] }}
