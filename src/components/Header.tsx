@@ -54,6 +54,23 @@ const Header = () => {
     };
   }, []);
 
+  // Add click outside listener for mobile menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.mobile-menu-button')) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSearch();
@@ -111,27 +128,27 @@ const Header = () => {
         </motion.div>
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-4 gap-4">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                className="relative w-8 h-8 flex flex-col justify-center items-center group"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-              </button>
-            </div>
-
+        <div className="flex items-center justify-between py-4 gap-2 md:gap-4">
+          <div className="flex items-center">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Logo size="md" />
             </motion.div>
+          </div>
+          
+          {/* Mobile menu button - positioned at the far right */}
+          <div className="md:hidden ml-auto order-last">
+            <button
+              className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
+              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+            </button>
           </div>
 
           {/* Search bar */}
@@ -215,7 +232,7 @@ const Header = () => {
           {/* Action buttons - mobile and desktop */}
           <motion.div
             variants={slideInRight}
-            className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-16 right-4 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50`}
+className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-16 right-0 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50 mobile-menu`}
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
