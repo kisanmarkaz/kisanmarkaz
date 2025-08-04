@@ -16,6 +16,7 @@ const Search = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const location = searchParams.get('location') || 'all';
+  const featured = searchParams.get('featured') === 'true';
   const [viewMode, setViewMode] = React.useState('grid');
   const [sortBy, setSortBy] = React.useState<'newest' | 'oldest' | 'price-low' | 'price-high'>('newest');
   const [priceMin, setPriceMin] = React.useState('');
@@ -38,7 +39,8 @@ const Search = () => {
     paymentTerms: paymentTerms === 'all' ? undefined : paymentTerms as any,
     organic: organic === 'all' ? undefined : organic === 'yes',
     quantityMin: quantityMin ? parseFloat(quantityMin) : undefined,
-    quantityMax: quantityMax ? parseFloat(quantityMax) : undefined
+    quantityMax: quantityMax ? parseFloat(quantityMax) : undefined,
+    featured: featured ? true : undefined,
   });
 
   const { data: favorites } = useFavorites();
@@ -276,8 +278,13 @@ const Search = () => {
                           alt={listing.title}
                           className="w-full h-48 object-cover"
                         />
+                        {listing.featured && (
+                          <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded">
+                            FEATURED
+                          </span>
+                        )}
                         {listing.urgent && (
-                          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                          <span className="absolute top-2 left-20 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
                             URGENT
                           </span>
                         )}
