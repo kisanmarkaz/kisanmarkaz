@@ -128,7 +128,7 @@ const Header = () => {
         </motion.div>
 
         {/* Main header */}
-        <div className="flex items-center justify-between py-4 gap-2 md:gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between py-4 gap-2 md:gap-4">
           <div className="flex items-center">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -139,7 +139,7 @@ const Header = () => {
           </div>
           
           {/* Mobile menu button - positioned at the far right */}
-          <div className="md:hidden ml-auto order-last">
+          <div className="md:hidden ml-auto order-last absolute top-4 right-4">
             <button
               className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -155,13 +155,13 @@ const Header = () => {
           <motion.form
             variants={fadeIn}
             onSubmit={handleSubmit}
-            className="flex flex-1 max-w-2xl mx-0 md:mx-8 relative order-3 md:order-none w-full md:w-auto mt-4 md:mt-0"
+            className="flex flex-1 max-w-4xl mx-auto relative order-3 md:order-none w-full mt-4 md:mt-0"
           >
             <div className="relative flex shadow-xl rounded-lg overflow-hidden glass-input">
               <Input
                 type="text"
                 placeholder={t('search.placeholder')}
-                className="flex-1 rounded-l-lg border-0 bg-white/30 text-white placeholder-white/70 focus:ring-2 focus:ring-yellow-500/50 focus:bg-white/20 transition-all duration-200 backdrop-blur-md"
+                className="flex-1 min-w-[400px] w-full rounded-l-lg border-0 bg-white/30 text-white placeholder-white/70 focus:ring-2 focus:ring-yellow-500/50 focus:bg-white/20 transition-all duration-200 backdrop-blur-md"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
