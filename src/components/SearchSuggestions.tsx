@@ -20,7 +20,7 @@ const SearchSuggestions = ({ query, onSelect, className = '' }: SearchSuggestion
   }
 
   return (
-    <div className={`absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50 ${className}`}>
+    <div className={`absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-[60] max-h-80 overflow-y-auto ${className}`}>
       {suggestions.titles.length > 0 && (
         <div className="p-2">
           <div className="flex items-center text-xs text-gray-500 px-2 mb-1">
@@ -30,7 +30,7 @@ const SearchSuggestions = ({ query, onSelect, className = '' }: SearchSuggestion
           {suggestions.titles.map((title, index) => (
             <button
               key={index}
-              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm"
+              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-gray-800 transition-colors"
               onClick={() => onSelect(title)}
             >
               {title}
@@ -48,7 +48,7 @@ const SearchSuggestions = ({ query, onSelect, className = '' }: SearchSuggestion
           {suggestions.categories.map((category, index) => (
             <button
               key={index}
-              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm"
+              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-gray-800 transition-colors"
               onClick={() => onSelect(category)}
             >
               {category}
@@ -66,7 +66,7 @@ const SearchSuggestions = ({ query, onSelect, className = '' }: SearchSuggestion
           {suggestions.subcategories.map((subcategory, index) => (
             <button
               key={index}
-              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm"
+              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded text-sm text-gray-800 transition-colors"
               onClick={() => onSelect(subcategory)}
             >
               {subcategory}
