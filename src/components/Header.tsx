@@ -98,70 +98,43 @@ const Header = () => {
         }`}
     >
       <div className="container mx-auto px-4">
-        {/* Top bar */}
-        <motion.div
-          variants={slideUp}
-          className="flex items-center justify-end py-2 text-sm border-b border-green-500"
-        >
-          <motion.div
-            variants={slideInRight}
-            className="flex items-center space-x-4"
-          >
-            {user ? (
-              <>
-                <motion.div whileHover={{ scale: 1.05 }}>
-                  <Link to="/settings" className="flex items-center hover:text-green-200 transition-colors duration-200">
-                    <Settings className="h-4 w-4 mr-1" />
-                    {t('common.settings')}
-                  </Link>
-                </motion.div>
-              </>
-            ) : (
-              <motion.div whileHover={{ scale: 1.05 }}>
-                <Link to="/auth" className="flex items-center hover:text-green-200 transition-colors duration-200">
-                  <User className="h-4 w-4 mr-1" />
-                  {t('common.login')}
-                </Link>
-              </motion.div>
-            )}
-          </motion.div>
-        </motion.div>
 
         {/* Main header */}
         <div className="flex flex-col md:flex-row items-center justify-between py-4 gap-2 md:gap-4">
-          <div className="flex items-center">
+          {/* Logo and burger menu row for mobile */}
+          <div className="flex items-center justify-between w-full md:w-auto">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Logo size="md" />
             </motion.div>
-          </div>
-          
-          {/* Mobile menu button - positioned at the far right */}
-          <div className="md:hidden ml-auto order-last absolute top-4 right-4">
-            <button
-              className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
-              <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-            </button>
+            
+            {/* Mobile menu button - positioned at the far right */}
+            <div className="md:hidden">
+              <button
+                className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
+                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
+              </button>
+            </div>
           </div>
 
           {/* Search bar */}
           <motion.form
             variants={fadeIn}
             onSubmit={handleSubmit}
-            className="flex flex-1 max-w-4xl mx-auto relative order-3 md:order-none w-full mt-4 md:mt-0"
+            className="flex flex-1 max-w-4xl mx-auto relative w-full mt-4 md:mt-0"
           >
-            <div className="relative flex shadow-xl rounded-lg overflow-hidden glass-input">
+            <div className="relative flex w-full shadow-xl rounded-lg overflow-hidden glass-input">
               <Input
                 type="text"
                 placeholder={t('search.placeholder')}
-                className="flex-1 min-w-[400px] w-full rounded-l-lg border-0 bg-white/30 text-white placeholder-white/70 focus:ring-2 focus:ring-yellow-500/50 focus:bg-white/20 transition-all duration-200 backdrop-blur-md"
+                className="flex-1 w-full min-w-0 rounded-l-lg border-0 bg-white/30 text-white placeholder-white/70 focus:ring-2 focus:ring-yellow-500/50 focus:bg-white/20 transition-all duration-200 backdrop-blur-md"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
@@ -170,10 +143,10 @@ const Header = () => {
                   setTimeout(() => setShowSuggestions(false), 200);
                 }}
               />
-              <div className="flex items-center px-3 bg-white/20 border-l border-white/30 backdrop-blur-md">
-                <MapPin className="h-4 w-4 text-white mr-2" />
+              <div className="flex items-center px-2 md:px-3 bg-white/20 border-l border-white/30 backdrop-blur-md">
+                <MapPin className="h-4 w-4 text-white mr-1 md:mr-2 flex-shrink-0" />
                 <select
-                  className="border-0 bg-transparent text-white text-sm focus:outline-none"
+                  className="border-0 bg-transparent text-white text-xs md:text-sm focus:outline-none min-w-0"
                   value={searchLocation}
                   onChange={handleLocationChange}
                 >
@@ -185,7 +158,7 @@ const Header = () => {
                 </select>
                 {searchLocation !== 'all' && (
                   <select
-                    className="border-0 bg-transparent text-white text-sm focus:outline-none ml-2 border-l border-white/30 pl-2"
+                    className="border-0 bg-transparent text-white text-xs md:text-sm focus:outline-none ml-1 md:ml-2 border-l border-white/30 pl-1 md:pl-2 min-w-0"
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
                   >
@@ -232,7 +205,7 @@ const Header = () => {
           {/* Action buttons - mobile and desktop */}
           <motion.div
             variants={slideInRight}
-className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-16 right-0 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50 mobile-menu`}
+className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-full right-0 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50 mobile-menu`}
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
