@@ -94,7 +94,7 @@ const Header = () => {
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-300 ${scrolled ? 'glass-dark bg-green-600/80 shadow-xl' : 'glass bg-green-600/90 shadow-lg'
+      className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-300 ${scrolled ? 'glass-dark bg-green-600/60 shadow-xl' : 'glass bg-green-600/30 shadow-lg'
         }`}
     >
       <div className="container mx-auto px-4">
