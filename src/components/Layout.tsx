@@ -50,9 +50,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex-1 pt-[120px]">
-        <ScrollReveal variant="fadeIn">
-          <AdBanner variant="large" className="mb-8" />
-        </ScrollReveal>
         <main>
           {children}
         </main>
