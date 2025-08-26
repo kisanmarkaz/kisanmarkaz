@@ -41,7 +41,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const setLanguage = async (lang: Language) => {
     try {
       console.log('Setting language to:', lang);
-      await updatePreferences({ language: lang });
+      // Try to update preferences, but don't block if user is not logged in
+      try {
+        await updatePreferences({ language: lang });
+      } catch (authError) {
+        console.warn('Could not update language preference (user not logged in):', authError);
+      }
       const newTranslations = await loadTranslations(lang);
       setTranslations(newTranslations);
       setLanguageState(lang);

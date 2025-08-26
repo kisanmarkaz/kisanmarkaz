@@ -20,6 +20,9 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import IrrigationCategoryFields from '@/components/IrrigationCategoryFields';
+import FeaturedListingSelector from '@/components/FeaturedListingSelector';
+import { paddleService } from '@/services/paddleService';
+import type { FeaturedDuration } from '@/constants/featuredListing';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -78,6 +81,8 @@ const Sell = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categoryFields, setCategoryFields] = useState<Record<string, any>>({});
+  const [selectedFeaturedDuration, setSelectedFeaturedDuration] = useState<FeaturedDuration | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { user } = useAuth();
   const { data: categories } = useCategories();
   const navigate = useNavigate();
@@ -259,12 +264,55 @@ const Sell = () => {
         console.log('Category field values saved successfully');
       }
 
-      toast({
-        title: "Success!",
-        description: "Your listing has been created.",
-      });
+      // Handle featured listing if selected
+      if (selectedFeaturedDuration) {
+        try {
+          setIsProcessingPayment(true);
+          
+          // Get user email for payment
+          const userEmail = data.contact_email || user.email || '';
+          
+          if (!userEmail) {
+            throw new Error('Email is required for featured listing payment');
+          }
 
-      navigate(`/listing/${listing.id}`);
+          // Create payment checkout with Paddle
+          await paddleService.createFeaturedListingCheckout({
+            listingId: listing.id,
+            userId: user.id,
+            duration: selectedFeaturedDuration,
+            userEmail: userEmail,
+            listingTitle: data.title,
+          });
+
+          toast({
+            title: "Success!",
+            description: "Your listing has been created. Please complete the payment to feature it.",
+          });
+          
+          // Don't navigate away, Paddle will handle the checkout flow
+          
+        } catch (paymentError: any) {
+          console.error('Payment initiation error:', paymentError);
+          toast({
+            title: "Listing Created",
+            description: "Your listing was created successfully, but we couldn't process the featured listing payment. You can try again later.",
+            variant: "default"
+          });
+          
+          // Still navigate to the listing even if payment fails
+          navigate(`/listing/${listing.id}`);
+        } finally {
+          setIsProcessingPayment(false);
+        }
+      } else {
+        toast({
+          title: "Success!",
+          description: "Your listing has been created.",
+        });
+        
+        navigate(`/listing/${listing.id}`);
+      }
     } catch (error: any) {
       console.error('Error creating listing:', error);
       toast({
@@ -625,16 +673,28 @@ const Sell = () => {
               </CardContent>
             </Card>
 
+            {/* Featured Listing Selection */}
+            <FeaturedListingSelector
+              onSelectionChange={setSelectedFeaturedDuration}
+              selectedDuration={selectedFeaturedDuration}
+              disabled={isSubmitting || isProcessingPayment}
+            />
+
             {/* Submit Button */}
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isProcessingPayment}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating Listing...
+                </>
+              ) : selectedFeaturedDuration ? (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create & Pay for Featured Listing
                 </>
               ) : (
                 <>
