@@ -18,8 +18,20 @@ const PaymentSuccess: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const listingId = searchParams.get('listing_id');
-  const transactionId = searchParams.get('transaction_id');
+  const paymentId = searchParams.get('payment_id');
+  const transactionId = searchParams.get('_ptxn') || searchParams.get('transaction_id');
   const checkoutId = searchParams.get('checkout_id');
+  
+  // Get custom data from URL if available
+  const customDataParam = searchParams.get('_pcd');
+  let customData: any = {};
+  if (customDataParam) {
+    try {
+      customData = JSON.parse(decodeURIComponent(customDataParam));
+    } catch (e) {
+      console.error('Failed to parse custom data:', e);
+    }
+  }
 
   useEffect(() => {
     const processPaymentSuccess = async () => {
@@ -32,9 +44,13 @@ const PaymentSuccess: React.FC = () => {
           throw new Error('Missing payment information');
         }
 
-        // In a real implementation, you would verify the payment with Paddle
-        // For now, we'll simulate successful payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing
+        // Process the actual payment with Paddle service
+        // The transactionId should be passed from Paddle webhook or success URL
+        if (transactionId) {
+          // In a real implementation, you would verify the transaction with Paddle API
+          // For now, we'll process it through our service
+          await paddleService.handlePaymentSuccess(transactionId, { listingId });
+        }
 
         // Mark as complete
         setProcessingComplete(true);
@@ -48,6 +64,12 @@ const PaymentSuccess: React.FC = () => {
         console.error('Payment processing error:', err);
         setError(err.message || 'Failed to process payment');
         setIsProcessing(false);
+        
+        toast({
+          title: "Payment Processing Error",
+          description: "There was an issue processing your payment. Please contact support.",
+          variant: "destructive"
+        });
       }
     };
 

@@ -75,6 +75,7 @@ const AnimatedRoutes = () => {
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/cancelled" element={<PaymentCancelled />} />
         <Route path="/paddle-debug" element={<PaddleDebug />} />
+        <Route path="/paddle-debugger" element={<PaddleDebug />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

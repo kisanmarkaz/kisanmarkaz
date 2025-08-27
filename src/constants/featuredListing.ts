@@ -94,7 +94,6 @@ export const formatFeaturedDuration = (duration: FeaturedDuration): string => {
 
 export const PADDLE_CONFIG = {
   environment: import.meta.env.MODE === 'production' ? 'production' : 'sandbox',
-  vendorId: import.meta.env.VITE_PADDLE_VENDOR_ID || '',
   clientSideToken: import.meta.env.VITE_PADDLE_CLIENT_TOKEN || '',
   apiKey: import.meta.env.VITE_PADDLE_API_KEY || ''
 } as const;
