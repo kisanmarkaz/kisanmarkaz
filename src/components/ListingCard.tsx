@@ -17,6 +17,7 @@ import {
 import { useDeleteListing } from '@/hooks/useListings';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { FeaturedListingCardWrapper } from '@/components/FeaturedListingBadge';
 
 interface Listing {
   id: string;
@@ -30,6 +31,8 @@ interface Listing {
   location_city: string;
   location_province: string;
   created_at: string;
+  featured?: boolean;
+  featured_expiry?: string;
 }
 
 interface ListingCardProps {
@@ -64,14 +67,21 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, showEditButton = fal
     draft: 'bg-yellow-500'
   };
 
+  // Check if listing is currently featured
+  const isFeatured = listing.featured && 
+    (!listing.featured_expiry || new Date(listing.featured_expiry) > new Date());
+
   return (
-    <motion.div 
-      className="glass-card bg-white/90 rounded-lg overflow-hidden hover-lift"
-      whileHover={{ y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-    >
+    <FeaturedListingCardWrapper isFeatured={isFeatured}>
+      <motion.div 
+        className={`glass-card bg-white/90 rounded-lg overflow-hidden hover-lift ${
+          isFeatured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-100' : ''
+        }`}
+        whileHover={{ y: -5 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      >
       <div className="relative overflow-hidden">
         <motion.img
           src={listing.images?.[0] || "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=300&fit=crop"}
@@ -204,8 +214,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, showEditButton = fal
             </AlertDialog>
           </div>
         )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </FeaturedListingCardWrapper>
   );
 };
 

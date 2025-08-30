@@ -1,4 +1,3 @@
-import { initializePaddle, Paddle } from '@paddle/paddle-js';
 import { supabase } from '@/integrations/supabase/client';
 import { PADDLE_CONFIG, getFeaturedPrice, calculateFeaturedEndDate, type FeaturedDuration } from '@/constants/featuredListing';
 
@@ -17,47 +16,17 @@ export interface CheckoutOptions {
 }
 
 class PaddleService {
-  private paddle: Paddle | null = null;
-  private initialized = false;
-
-  async initialize(): Promise<void> {
-    if (this.initialized && this.paddle) {
-      return;
-    }
-
-    try {
-      if (!PADDLE_CONFIG.clientSideToken) {
-        throw new Error('Paddle client side token is not configured');
-      }
-
-      console.log('Initializing Paddle with config:', {
-        environment: PADDLE_CONFIG.environment,
-        tokenLength: PADDLE_CONFIG.clientSideToken.length
-      });
-
-      this.paddle = await initializePaddle({
-        environment: PADDLE_CONFIG.environment,
-        token: PADDLE_CONFIG.clientSideToken,
-      });
-
-      this.initialized = true;
-      console.log('Paddle initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize Paddle:', error);
-      throw error;
-    }
-  }
+  // Paddle price IDs from your dashboard
+  private readonly PRICE_IDS = {
+    day: 'pri_01k3keg923y3tjdt9qssz5ych6',
+    week: 'pri_01k3kegtft7zw2wpfdr6spaxzs', 
+    month: 'pri_01k3keh61xp92zf8brym62a09k'
+  };
 
   async createFeaturedListingCheckout(
     paymentData: PaymentData,
     options: CheckoutOptions = {}
-  ): Promise<string> {
-    await this.initialize();
-
-    if (!this.paddle) {
-      throw new Error('Paddle is not initialized');
-    }
-
+  ): Promise<{ checkoutUrl: string; paymentId: string }> {
     const price = getFeaturedPrice(paymentData.duration);
     const endDate = calculateFeaturedEndDate(paymentData.duration);
 
@@ -69,35 +38,42 @@ class PaddleService {
       console.log('Creating checkout with price ID:', priceId);
       console.log('Payment data:', paymentData);
       
-      const checkoutData = {
-        items: [{
+      // Call Supabase Edge Function to create Paddle checkout
+      const { data, error } = await supabase.functions.invoke('create-paddle-checkout', {
+        body: {
           priceId: priceId,
-          quantity: 1,
-        }],
-        customer: {
-          email: paymentData.userEmail,
-        },
-        customData: {
-          listingId: paymentData.listingId,
-          userId: paymentData.userId,
-          duration: paymentData.duration,
-          paymentId: paymentRecord.id,
-          listingTitle: paymentData.listingTitle,
-          featuredUntil: endDate.toISOString(),
-          ...options.customData,
-        },
-        settings: {
+          customerEmail: paymentData.userEmail,
+          customData: {
+            listingId: paymentData.listingId,
+            userId: paymentData.userId,
+            duration: paymentData.duration,
+            paymentId: paymentRecord.id,
+            listingTitle: paymentData.listingTitle,
+            featuredUntil: endDate.toISOString(),
+            ...options.customData,
+          },
           successUrl: options.successUrl || `${window.location.origin}/payment/success?listing_id=${paymentData.listingId}&payment_id=${paymentRecord.id}`,
           cancelUrl: options.cancelUrl || `${window.location.origin}/payment/cancelled?listing_id=${paymentData.listingId}&payment_id=${paymentRecord.id}`,
         },
+      });
+
+      if (error) {
+        console.error('Error creating checkout:', error);
+        throw new Error('Failed to create checkout session');
+      }
+
+      console.log('Checkout created successfully:', data);
+      
+      // Update payment record with checkout ID
+      await supabase
+        .from('payments')
+        .update({ paddle_checkout_id: data.checkoutId })
+        .eq('id', paymentRecord.id);
+      
+      return {
+        checkoutUrl: data.checkoutUrl,
+        paymentId: paymentRecord.id
       };
-      
-      console.log('Opening Paddle checkout with data:', checkoutData);
-      
-      // Open Paddle checkout overlay
-      this.paddle.Checkout.open(checkoutData);
-      
-      return 'checkout_opened';
     } catch (error) {
       console.error('Failed to create checkout:', error);
       // If checkout creation fails, mark payment as failed
@@ -136,20 +112,9 @@ class PaddleService {
   }
 
   private getPriceIdForDuration(duration: FeaturedDuration): string {
-    const priceIds = {
-      day: import.meta.env.VITE_PADDLE_PRICE_ID_DAY || 'pri_day_placeholder',
-      week: import.meta.env.VITE_PADDLE_PRICE_ID_WEEK || 'pri_week_placeholder',
-      month: import.meta.env.VITE_PADDLE_PRICE_ID_MONTH || 'pri_month_placeholder',
-    };
-
-    console.log('Environment variables for Paddle:', {
-      day: import.meta.env.VITE_PADDLE_PRICE_ID_DAY,
-      week: import.meta.env.VITE_PADDLE_PRICE_ID_WEEK,
-      month: import.meta.env.VITE_PADDLE_PRICE_ID_MONTH
-    });
-    
-    console.log(`Getting price ID for duration '${duration}':`, priceIds[duration]);
-    return priceIds[duration];
+    const priceId = this.PRICE_IDS[duration];
+    console.log(`Getting price ID for duration '${duration}':`, priceId);
+    return priceId;
   }
 
 
@@ -268,41 +233,19 @@ class PaddleService {
 
   // Test method that doesn't create database records
   async testCheckoutConfiguration(): Promise<string> {
-    await this.initialize();
-
-    if (!this.paddle) {
-      throw new Error('Paddle is not initialized');
-    }
-
     // Test price ID availability
     const priceId = this.getPriceIdForDuration('day');
-    if (!priceId || priceId === 'pri_day_placeholder') {
+    if (!priceId) {
       throw new Error('Price IDs not configured properly');
     }
 
-    // Test checkout configuration structure
-    const testCheckoutData = {
-      items: [{
-        priceId: priceId,
-        quantity: 1,
-      }],
-      customer: {
-        email: 'test@example.com',
-      },
-      customData: {
-        listingId: 'test-listing-123',
-        userId: 'test-user-123',
-        duration: 'day',
-        listingTitle: 'Test Listing'
-      },
-      settings: {
-        successUrl: `${window.location.origin}/payment/success?listing_id=test`,
-        cancelUrl: `${window.location.origin}/payment/cancelled?listing_id=test`,
-      },
-    };
-
-    console.log('Test checkout configuration validated:', testCheckoutData);
+    console.log('Price IDs configured correctly:', this.PRICE_IDS);
     return 'Configuration test passed';
+  }
+
+  // Method to redirect to Paddle checkout
+  redirectToCheckout(checkoutUrl: string): void {
+    window.location.href = checkoutUrl;
   }
 }
 

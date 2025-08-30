@@ -277,7 +277,7 @@ const Sell = () => {
           }
 
           // Create payment checkout with Paddle
-          await paddleService.createFeaturedListingCheckout({
+          const { checkoutUrl } = await paddleService.createFeaturedListingCheckout({
             listingId: listing.id,
             userId: user.id,
             duration: selectedFeaturedDuration,
@@ -287,10 +287,11 @@ const Sell = () => {
 
           toast({
             title: "Success!",
-            description: "Your listing has been created. Please complete the payment to feature it.",
+            description: "Your listing has been created. Redirecting to checkout...",
           });
           
-          // Don't navigate away, Paddle will handle the checkout flow
+          // Redirect to Paddle checkout
+          paddleService.redirectToCheckout(checkoutUrl);
           
         } catch (paymentError: any) {
           console.error('Payment initiation error:', paymentError);

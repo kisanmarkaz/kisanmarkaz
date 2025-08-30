@@ -52,7 +52,9 @@ export function useListings(filters?: {
         query = query.lte('price', filters.priceMax);
       }
       if (filters?.featured) {
-        query = query.eq('featured', true);
+        // Only show currently active featured listings
+        query = query.eq('featured', true)
+                    .or('featured_expiry.is.null,featured_expiry.gt.' + new Date().toISOString());
       }
       
       // New filters
@@ -75,7 +77,12 @@ export function useListings(filters?: {
         query = query.lte('quantity', filters.quantityMax);
       }
 
-      // Apply sorting
+      // Apply sorting - featured listings should appear first when not specifically filtering
+      if (!filters?.featured) {
+        // Sort by featured status first (true values first), then by other criteria
+        query = query.order('featured', { ascending: false });
+      }
+      
       switch (filters?.sortBy) {
         case 'oldest':
           query = query.order('created_at', { ascending: true });
