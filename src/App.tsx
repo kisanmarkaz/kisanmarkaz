@@ -37,6 +37,7 @@ import NewService from "./pages/NewService";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
 import PaddleDebug from "./pages/PaddleDebug";
+import PaymentDebug from "./pages/PaymentDebug";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const AnimatedRoutes = () => {
         <Route path="/payment/cancelled" element={<PaymentCancelled />} />
         <Route path="/paddle-debug" element={<PaddleDebug />} />
         <Route path="/paddle-debugger" element={<PaddleDebug />} />
+        <Route path="/payment-debug" element={<PaymentDebug />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

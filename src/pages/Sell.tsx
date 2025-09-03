@@ -268,6 +268,7 @@ const Sell = () => {
       if (selectedFeaturedDuration) {
         try {
           setIsProcessingPayment(true);
+          console.log('💳 Starting featured listing payment process...');
           
           // Get user email for payment
           const userEmail = data.contact_email || user.email || '';
@@ -276,6 +277,7 @@ const Sell = () => {
             throw new Error('Email is required for featured listing payment');
           }
 
+          console.log('🚀 Creating checkout for featured listing...');
           // Create payment checkout with Paddle
           const { checkoutUrl } = await paddleService.createFeaturedListingCheckout({
             listingId: listing.id,
@@ -285,24 +287,37 @@ const Sell = () => {
             listingTitle: data.title,
           });
 
+          console.log('✅ Checkout URL received:', checkoutUrl);
+
           toast({
             title: "Success!",
             description: "Your listing has been created. Redirecting to checkout...",
           });
           
-          // Redirect to Paddle checkout
-          paddleService.redirectToCheckout(checkoutUrl);
+          // Small delay to ensure toast is shown
+          setTimeout(() => {
+            console.log('🔄 Redirecting to Paddle checkout...');
+            paddleService.redirectToCheckout(checkoutUrl);
+          }, 1000);
+          
+          // Don't navigate away - let Paddle handle the flow
+          return;
           
         } catch (paymentError: any) {
-          console.error('Payment initiation error:', paymentError);
+          console.error('❌ Payment initiation error:', paymentError);
+          
+          // Show more specific error message
+          const errorMessage = paymentError.message || 'Unknown payment error';
+          
           toast({
-            title: "Listing Created",
-            description: "Your listing was created successfully, but we couldn't process the featured listing payment. You can try again later.",
-            variant: "default"
+            title: "Payment Error",
+            description: `Failed to initialize payment: ${errorMessage}. Your listing was created but is not featured.`,
+            variant: "destructive"
           });
           
-          // Still navigate to the listing even if payment fails
+          // Navigate to the listing page since the listing was created successfully
           navigate(`/listing/${listing.id}`);
+          return;
         } finally {
           setIsProcessingPayment(false);
         }

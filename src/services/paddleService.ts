@@ -18,27 +18,42 @@ export interface CheckoutOptions {
 class PaddleService {
   // Paddle price IDs from your dashboard
   private readonly PRICE_IDS = {
-    day: 'pri_01k3keg923y3tjdt9qssz5ych6',
-    week: 'pri_01k3kegtft7zw2wpfdr6spaxzs', 
-    month: 'pri_01k3keh61xp92zf8brym62a09k'
+    day:
+      (import.meta as any)?.env?.VITE_PADDLE_PRICE_ID_DAY ||
+      'pri_01k3keg923y3tjdt9qssz5ych6',
+    week:
+      (import.meta as any)?.env?.VITE_PADDLE_PRICE_ID_WEEK ||
+      'pri_01k3kegtft7zw2wpfdr6spaxzs',
+    month:
+      (import.meta as any)?.env?.VITE_PADDLE_PRICE_ID_MONTH ||
+      'pri_01k3keh61xp92zf8brym62a09k'
   };
+
+  private isValidUuid(value: string): boolean {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+  }
 
   async createFeaturedListingCheckout(
     paymentData: PaymentData,
     options: CheckoutOptions = {}
   ): Promise<{ checkoutUrl: string; paymentId: string }> {
+    console.log('🔄 Starting featured listing checkout creation...', paymentData);
+    
     const price = getFeaturedPrice(paymentData.duration);
     const endDate = calculateFeaturedEndDate(paymentData.duration);
 
     // First create a payment record in our database
+    console.log('📝 Creating payment record...');
     const paymentRecord = await this.createPaymentRecord(paymentData, price);
+    console.log('✅ Payment record created:', paymentRecord.id);
 
     try {
       const priceId = this.getPriceIdForDuration(paymentData.duration);
-      console.log('Creating checkout with price ID:', priceId);
-      console.log('Payment data:', paymentData);
+      console.log('💰 Using price ID:', priceId);
+      console.log('📧 Customer email:', paymentData.userEmail);
       
       // Call Supabase Edge Function to create Paddle checkout
+      console.log('🚀 Calling create-paddle-checkout Edge Function...');
       const { data, error } = await supabase.functions.invoke('create-paddle-checkout', {
         body: {
           priceId: priceId,
@@ -57,25 +72,35 @@ class PaddleService {
         },
       });
 
+      console.log('📡 Edge Function response:', { data, error });
+
       if (error) {
-        console.error('Error creating checkout:', error);
-        throw new Error('Failed to create checkout session');
+        console.error('❌ Edge Function error:', error);
+        throw new Error(`Edge Function error: ${error.message}`);
       }
 
-      console.log('Checkout created successfully:', data);
+      if (!data || !data.checkoutUrl) {
+        console.error('❌ Invalid response from Edge Function:', data);
+        throw new Error('Invalid response from checkout service');
+      }
+
+      console.log('✅ Checkout created successfully:', data.checkoutUrl);
       
       // Update payment record with checkout ID
-      await supabase
-        .from('payments')
-        .update({ paddle_checkout_id: data.checkoutId })
-        .eq('id', paymentRecord.id);
+      if (data.checkoutId) {
+        await supabase
+          .from('payments')
+          .update({ paddle_checkout_id: data.checkoutId })
+          .eq('id', paymentRecord.id);
+        console.log('✅ Payment record updated with checkout ID');
+      }
       
       return {
         checkoutUrl: data.checkoutUrl,
         paymentId: paymentRecord.id
       };
     } catch (error) {
-      console.error('Failed to create checkout:', error);
+      console.error('❌ Failed to create checkout:', error);
       // If checkout creation fails, mark payment as failed
       await supabase
         .from('payments')
@@ -87,11 +112,15 @@ class PaddleService {
   }
 
   private async createPaymentRecord(paymentData: PaymentData, amount: number) {
+    const listingIdValue = this.isValidUuid(paymentData.listingId) ? paymentData.listingId : null;
+    if (!listingIdValue) {
+      console.warn('createPaymentRecord: Provided listingId is not a valid UUID. Storing as NULL.', paymentData.listingId);
+    }
     const { data: payment, error } = await supabase
       .from('payments')
       .insert({
         user_id: paymentData.userId,
-        listing_id: paymentData.listingId,
+        listing_id: listingIdValue,
         amount: amount,
         currency: 'USD',
         status: 'pending',
@@ -104,8 +133,14 @@ class PaddleService {
       .single();
 
     if (error) {
-      console.error('Failed to create payment record:', error);
-      throw new Error('Failed to create payment record');
+      console.error('Failed to create payment record:', {
+        message: error.message,
+        details: (error as any)?.details,
+        hint: (error as any)?.hint,
+        code: (error as any)?.code,
+      });
+      const enrichedMessage = `Failed to create payment record: ${error.message || 'unknown error'}`;
+      throw new Error(enrichedMessage);
     }
 
     return payment;
@@ -145,7 +180,8 @@ class PaddleService {
     }
   }
 
-  async updatePaymentStatus(
+  async updatePaymentStatusById(
+    paymentId: string,
     transactionId: string,
     status: 'completed' | 'failed' | 'cancelled'
   ): Promise<void> {
@@ -155,7 +191,7 @@ class PaddleService {
         paddle_transaction_id: transactionId,
         status: status,
       })
-      .eq('paddle_transaction_id', transactionId);
+      .eq('id', paymentId);
 
     if (error) {
       console.error('Failed to update payment status:', error);
@@ -165,8 +201,11 @@ class PaddleService {
 
   async handlePaymentSuccess(transactionId: string, customData: any): Promise<void> {
     try {
-      // Update payment status
-      await this.updatePaymentStatus(transactionId, 'completed');
+      // Update payment status using the known payment ID from custom data
+      if (!customData?.paymentId) {
+        throw new Error('Missing paymentId in customData');
+      }
+      await this.updatePaymentStatusById(customData.paymentId, transactionId, 'completed');
 
       // Create featured listing record
       await this.createFeaturedListingRecord(

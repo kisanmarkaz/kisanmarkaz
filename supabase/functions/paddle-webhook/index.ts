@@ -1,6 +1,33 @@
+// @ts-nocheck
+// Edge Function - runs in Deno runtime (ignore TypeScript warnings)
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsHeaders } from "../_shared/cors.ts"
+
+// Type definitions for Paddle webhook data
+type Duration = 'day' | 'week' | 'month';
+
+interface PaddleCustomData {
+  listingId: string;
+  userId: string;
+  duration: Duration;
+  paymentId: string;
+  listingTitle?: string;
+}
+
+interface PaddleTransactionData {
+  id: string;
+  status: string;
+  custom_data: PaddleCustomData;
+  amount?: string;
+  currency_code?: string;
+}
+
+interface PaddleWebhookPayload {
+  event_type: string;
+  data: PaddleTransactionData;
+}
 
 // Initialize Supabase client
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -21,7 +48,7 @@ serve(async (req) => {
   }
 
   try {
-    const payload = await req.json()
+    const payload: PaddleWebhookPayload = await req.json()
     console.log('Received Paddle webhook:', JSON.stringify(payload, null, 2))
 
     // Log the webhook event
@@ -59,21 +86,18 @@ serve(async (req) => {
       }
     )
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Webhook processing error:', error)
 
-    // Try to log the error if we have a transaction ID
+    // Log the error with unknown transaction ID since we can't re-read the request
     try {
-      const payload = await req.json()
-      await supabase.from('webhook_logs')
-        .update({ 
-          status: 'error',
-          processed_at: new Date().toISOString(),
-          error_message: error.message
-        })
-        .eq('transaction_id', payload.data?.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
+      await supabase.from('webhook_logs').insert({
+        event_type: 'error',
+        transaction_id: null,
+        status: 'error',
+        error_message: error.message,
+        payload: { error: 'Failed to process webhook', message: error.message }
+      })
     } catch (logError) {
       console.error('Failed to log webhook error:', logError)
     }
@@ -81,7 +105,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error?.message || 'Unknown error'
       }),
       {
         status: 500,
@@ -91,7 +115,7 @@ serve(async (req) => {
   }
 })
 
-async function handleTransactionCompleted(transactionData: any) {
+async function handleTransactionCompleted(transactionData: PaddleTransactionData): Promise<void> {
   console.log('Processing completed transaction:', transactionData.id)
 
   const transactionId = transactionData.id
@@ -168,7 +192,7 @@ async function handleTransactionCompleted(transactionData: any) {
   console.log(`Successfully processed completed transaction ${transactionId} for listing ${listingId}`)
 }
 
-async function handleTransactionFailed(transactionData: any) {
+async function handleTransactionFailed(transactionData: PaddleTransactionData): Promise<void> {
   console.log('Processing failed transaction:', transactionData.id)
 
   const transactionId = transactionData.id
@@ -202,7 +226,7 @@ async function handleTransactionFailed(transactionData: any) {
   console.log(`Successfully processed failed transaction ${transactionId}`)
 }
 
-function calculateFeaturedEndDate(duration: string, startDate: Date = new Date()): Date {
+function calculateFeaturedEndDate(duration: Duration, startDate: Date = new Date()): Date {
   const endDate = new Date(startDate)
   
   switch (duration) {
@@ -222,7 +246,7 @@ function calculateFeaturedEndDate(duration: string, startDate: Date = new Date()
   return endDate
 }
 
-function getPriceForDuration(duration: string): number {
+function getPriceForDuration(duration: Duration): number {
   const prices = {
     day: 3,
     week: 15,
