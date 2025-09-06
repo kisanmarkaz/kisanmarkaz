@@ -68,15 +68,30 @@ const AdminFeaturedRequests: React.FC = () => {
 
       // 3) send email
       if (req.user_email) {
-        await fetch('/functions/v1/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: req.user_email,
-            subject: 'Your listing has been featured',
-            html: `<p>Congratulations! Your listing has been featured for ${req.plan}.</p>`
-          })
-        });
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          const response = await fetch(`${supabase.supabaseUrl}/functions/v1/send-email`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session?.access_token || ''}`
+            },
+            body: JSON.stringify({
+              to: req.user_email,
+              subject: 'Your listing has been featured',
+              html: `<p>Congratulations! Your listing has been featured for ${req.plan}.</p>`
+            })
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Email sending failed:', errorText);
+          } else {
+            console.log('Email sent successfully to:', req.user_email);
+          }
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
       }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['featured_payment_requests', 'admin'] }),
@@ -91,9 +106,13 @@ const AdminFeaturedRequests: React.FC = () => {
       if (error) throw error;
 
       if (req.user_email) {
-        await fetch('/functions/v1/send-email', {
+        const { data: { session } } = await supabase.auth.getSession();
+        await fetch(`${supabase.supabaseUrl}/functions/v1/send-email`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          },
           body: JSON.stringify({
             to: req.user_email,
             subject: 'Payment verification failed',

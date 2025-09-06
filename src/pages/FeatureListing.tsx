@@ -68,6 +68,58 @@ const FeatureListing: React.FC = () => {
         });
       if (insertErr) throw insertErr;
 
+      // Send email notification to admin
+      try {
+        console.log('Attempting to send admin notification...');
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Session:', session ? 'Found' : 'Not found');
+        
+        const { data: listingData } = await supabase
+          .from('listings')
+          .select('title')
+          .eq('id', listingId)
+          .single();
+        console.log('Listing data:', listingData);
+
+        const emailPayload = {
+          to: 'kulibre@gmail.com', // Change this to your admin email
+          subject: 'New Featured Listing Request',
+          html: `
+            <h3>New Featured Listing Request</h3>
+            <p><strong>Listing:</strong> ${listingData?.title || 'Unknown'}</p>
+            <p><strong>User:</strong> ${user.email}</p>
+            <p><strong>Plan:</strong> ${plan} - $${planInfo.price}</p>
+            <p><strong>Request ID:</strong> Request submitted</p>
+            <p>Please review the request at: <a href="${window.location.origin}/admin/featured-requests">Admin Panel</a></p>
+          `
+        };
+        
+        console.log('Sending email to:', emailPayload.to);
+        console.log('Email payload:', emailPayload);
+
+        const response = await fetch(`${supabase.supabaseUrl}/functions/v1/send-email`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          },
+          body: JSON.stringify(emailPayload)
+        });
+        
+        console.log('Email response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Email sending failed:', errorText);
+        } else {
+          const result = await response.json();
+          console.log('Admin notification sent successfully:', result);
+        }
+      } catch (emailError) {
+        console.error('Failed to send admin notification:', emailError);
+        // Don't fail the whole request if email fails
+      }
+
       toast({ title: 'Request submitted', description: 'You will be notified once verified.' });
       navigate(`/listing/${listingId}`);
     } catch (e: any) {
