@@ -18,7 +18,13 @@ export function useFavorites() {
           listing:listings(
             *,
             category:categories(*),
-            subcategory:subcategories(*)
+            subcategory:subcategories(*),
+            featured_listings!left(
+              id,
+              featured_from,
+              featured_until,
+              status
+            )
           )
         `)
         .eq('user_id', user.id);

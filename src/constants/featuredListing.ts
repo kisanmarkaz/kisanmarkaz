@@ -92,8 +92,4 @@ export const formatFeaturedDuration = (duration: FeaturedDuration): string => {
   return `${option.duration} ${option.unit}${option.duration > 1 ? 's' : ''}`;
 };
 
-export const PADDLE_CONFIG = {
-  environment: import.meta.env.MODE === 'production' ? 'production' : 'sandbox',
-  clientSideToken: import.meta.env.VITE_PADDLE_CLIENT_TOKEN || '',
-  apiKey: import.meta.env.VITE_PADDLE_API_KEY || ''
-} as const;
+// Paddle removed. No payment gateway config required for manual verification flow.

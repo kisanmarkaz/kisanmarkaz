@@ -34,10 +34,9 @@ import RefundPolicy from "./pages/RefundPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import Services from "./pages/Services";
 import NewService from "./pages/NewService";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import PaymentCancelled from "./pages/PaymentCancelled";
-import PaddleDebug from "./pages/PaddleDebug";
-import PaymentDebug from "./pages/PaymentDebug";
+import FeatureListing from "./pages/FeatureListing";
+import AdminFeaturedRequests from "./pages/AdminFeaturedRequests";
+// Removed Paddle payment routes
 
 const queryClient = new QueryClient();
 
@@ -73,11 +72,9 @@ const AnimatedRoutes = () => {
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/new" element={<NewService />} />
-        <Route path="/payment/success" element={<PaymentSuccess />} />
-        <Route path="/payment/cancelled" element={<PaymentCancelled />} />
-        <Route path="/paddle-debug" element={<PaddleDebug />} />
-        <Route path="/paddle-debugger" element={<PaddleDebug />} />
-        <Route path="/payment-debug" element={<PaymentDebug />} />
+        <Route path="/listing/:id/feature" element={<FeatureListing />} />
+        <Route path="/admin/featured-requests" element={<AdminFeaturedRequests />} />
+        {/* Payment routes removed */}
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

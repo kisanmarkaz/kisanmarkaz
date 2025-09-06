@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, ArrowLeft, Phone, Mail, Heart, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, ArrowLeft, Phone, Mail, Heart, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -352,7 +352,12 @@ const ListingDetail = () => {
                         Message Seller
                       </Button>
                     ) : (
-                      <p className="text-sm text-gray-500 text-center">This is your listing</p>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-500 text-center">This is your listing</p>
+                        <Button className="w-full" variant="outline" onClick={() => navigate(`/listing/${listing.id}/feature`)}>
+                          <Star className="h-4 w-4 mr-2" /> Feature Listing
+                        </Button>
+                      </div>
                     )
                   ) : (
                     <Link to="/auth" className="block">

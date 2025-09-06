@@ -68,8 +68,13 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, showEditButton = fal
   };
 
   // Check if listing is currently featured
-  const isFeatured = Boolean(listing.featured && 
-    (!listing.featured_expiry || new Date(listing.featured_expiry) > new Date()));
+  const isFeatured = Boolean(listing.featured_listings && 
+    listing.featured_listings.length > 0 &&
+    listing.featured_listings.some((fl: any) => 
+      fl.status === 'active' && 
+      new Date(fl.featured_from) <= new Date() && 
+      new Date(fl.featured_until) >= new Date()
+    ));
 
   return (
     <FeaturedListingCardWrapper isFeatured={isFeatured}>

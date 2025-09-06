@@ -21,7 +21,6 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import IrrigationCategoryFields from '@/components/IrrigationCategoryFields';
 import FeaturedListingSelector from '@/components/FeaturedListingSelector';
-import { paddleService } from '@/services/paddleService';
 import type { FeaturedDuration } from '@/constants/featuredListing';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -229,23 +228,31 @@ const Sell = () => {
 
       console.log('Creating listing with data:', listingData);
 
-      const { data: listing, error } = await supabase
+      const { data: inserted, error } = await supabase
         .from('listings')
-        .insert([listingData])
+        .insert({
+          ...listingData,
+          images: imageUrls,
+          user_id: user.id,
+        })
         .select()
         .single();
 
-      if (error) {
-        console.error('Error inserting listing:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Listing created successfully:', listing);
+      // If featured selected, redirect to manual payment instructions
+      if (selectedFeaturedDuration) {
+        navigate(`/listing/${inserted.id}/feature?plan=${selectedFeaturedDuration}`);
+        return;
+      }
+      
+      toast({ title: 'Listing created', description: 'Your listing has been created successfully.' });
+      navigate(`/listing/${inserted.id}`);
 
       // Save category-specific field values
-      if (fields && fields.length > 0 && listing) {
+      if (fields && fields.length > 0 && inserted) {
         const fieldValues = fields.map(field => ({
-          listing_id: listing.id,
+          listing_id: inserted.id,
           field_id: field.id,
           field_value: categoryFields[field.field_name]
         }));
@@ -264,71 +271,6 @@ const Sell = () => {
         console.log('Category field values saved successfully');
       }
 
-      // Handle featured listing if selected
-      if (selectedFeaturedDuration) {
-        try {
-          setIsProcessingPayment(true);
-          console.log('💳 Starting featured listing payment process...');
-          
-          // Get user email for payment
-          const userEmail = data.contact_email || user.email || '';
-          
-          if (!userEmail) {
-            throw new Error('Email is required for featured listing payment');
-          }
-
-          console.log('🚀 Creating checkout for featured listing...');
-          // Create payment checkout with Paddle
-          const { checkoutUrl } = await paddleService.createFeaturedListingCheckout({
-            listingId: listing.id,
-            userId: user.id,
-            duration: selectedFeaturedDuration,
-            userEmail: userEmail,
-            listingTitle: data.title,
-          });
-
-          console.log('✅ Checkout URL received:', checkoutUrl);
-
-          toast({
-            title: "Success!",
-            description: "Your listing has been created. Redirecting to checkout...",
-          });
-          
-          // Small delay to ensure toast is shown
-          setTimeout(() => {
-            console.log('🔄 Redirecting to Paddle checkout...');
-            paddleService.redirectToCheckout(checkoutUrl);
-          }, 1000);
-          
-          // Don't navigate away - let Paddle handle the flow
-          return;
-          
-        } catch (paymentError: any) {
-          console.error('❌ Payment initiation error:', paymentError);
-          
-          // Show more specific error message
-          const errorMessage = paymentError.message || 'Unknown payment error';
-          
-          toast({
-            title: "Payment Error",
-            description: `Failed to initialize payment: ${errorMessage}. Your listing was created but is not featured.`,
-            variant: "destructive"
-          });
-          
-          // Navigate to the listing page since the listing was created successfully
-          navigate(`/listing/${listing.id}`);
-          return;
-        } finally {
-          setIsProcessingPayment(false);
-        }
-      } else {
-        toast({
-          title: "Success!",
-          description: "Your listing has been created.",
-        });
-        
-        navigate(`/listing/${listing.id}`);
-      }
     } catch (error: any) {
       console.error('Error creating listing:', error);
       toast({
