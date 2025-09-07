@@ -215,6 +215,12 @@ className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row i
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/featured" className="w-full font-semibold text-yellow-600">
+                    ⭐ Featured Listings
+                  </Link>
+                </DropdownMenuItem>
+                <div className="border-t my-1"></div>
                 {categories.map((category) => (
                   <DropdownMenuItem key={category.id} asChild>
                     <Link to={`/category/${category.slug}`} className="w-full">

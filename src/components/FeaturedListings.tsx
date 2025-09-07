@@ -20,12 +20,14 @@ const FeaturedListings = () => {
   const ref = React.useRef(null);
   const isInView = React.useRef(false);
 
-  // Combine featured and latest listings, ensuring uniqueness by id
+  // Show maximum 3 featured listings, or latest listings if no featured ones
   let combinedListings = [];
-  if (featuredListings && latestListings) {
-    const featuredIds = new Set(featuredListings.map((l: any) => l.id));
-    const latestNotFeatured = latestListings.filter((l: any) => !featuredIds.has(l.id)).slice(0, 5);
-    combinedListings = [...featuredListings, ...latestNotFeatured].slice(0, 6);
+  if (featuredListings && featuredListings.length > 0) {
+    // Show up to 3 featured listings
+    combinedListings = featuredListings.slice(0, 3);
+  } else if (latestListings && latestListings.length > 0) {
+    // If no featured listings, show up to 3 latest listings
+    combinedListings = latestListings.slice(0, 3);
   }
 
   // Check if element is in view
@@ -62,20 +64,27 @@ const FeaturedListings = () => {
     });
   };
 
+  // Debug logging
+  console.log('FeaturedListings - isLoadingFeatured:', isLoadingFeatured);
+  console.log('FeaturedListings - isLoadingLatest:', isLoadingLatest);
+  console.log('FeaturedListings - featuredListings:', featuredListings);
+  console.log('FeaturedListings - latestListings:', latestListings);
+  console.log('FeaturedListings - combinedListings:', combinedListings);
+
   if (isLoadingFeatured || isLoadingLatest) {
     return (
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Featured Listings</h2>
-            <Link to="/search?featured=true">
+            <Link to="/featured">
               <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">
                 View All
               </Button>
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-white rounded-lg shadow-sm h-64 animate-pulse" />
             ))}
           </div>
@@ -89,15 +98,16 @@ const FeaturedListings = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900">Featured Listings</h2>
-          <Link to="/search?featured=true">
+          <Link to="/featured">
             <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">
               View All
             </Button>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {combinedListings?.map((listing) => (
+        {combinedListings && combinedListings.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {combinedListings.map((listing) => (
             <Link to={`/listing/${listing.id}`} key={listing.id} className="group">
               <div
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden group"
@@ -108,7 +118,7 @@ const FeaturedListings = () => {
                     alt={listing.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {listing.featured && (
+                  {listing.featured_listings && listing.featured_listings.length > 0 && (
                     <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded">
                       FEATURED
                     </span>
@@ -150,8 +160,26 @@ const FeaturedListings = () => {
                 </div>
               </div>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ArrowRight className="h-6 w-6 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Listings Available</h3>
+              <p className="text-gray-600 mb-4">
+                There are currently no featured or recent listings to display.
+              </p>
+              <Link to="/search">
+                <Button className="bg-green-600 hover:bg-green-700">
+                  Browse All Listings
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

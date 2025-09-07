@@ -248,6 +248,21 @@ const Search = () => {
             {/* Ad Script */}
             <AdScript />
 
+            {/* Featured Listings Section */}
+            {listings && listings.some(listing => listing.featured_listings && listing.featured_listings.length > 0) && (
+              <div className="mb-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex items-center">
+                    <span className="text-sm font-medium text-yellow-600 bg-yellow-50 px-3 py-1 rounded-full flex items-center">
+                      <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                      Featured Listings
+                    </span>
+                  </div>
+                  <div className="flex-1 h-px bg-gray-200 ml-4"></div>
+                </div>
+              </div>
+            )}
+
             {/* Listings Grid */}
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -278,8 +293,8 @@ const Search = () => {
                           alt={listing.title}
                           className="w-full h-48 object-cover"
                         />
-                        {listing.featured && (
-                          <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded">
+                        {listing.featured_listings && listing.featured_listings.length > 0 && (
+                          <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded z-10 shadow-lg">
                             FEATURED
                           </span>
                         )}

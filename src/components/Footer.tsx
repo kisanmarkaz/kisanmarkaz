@@ -48,6 +48,11 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-sm">
               <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Link to="/featured" className="hover:text-white hover-lift inline-block font-semibold text-yellow-400">
+                  ⭐ Featured Listings
+                </Link>
+              </motion.li>
+              <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
                 <Link to="/about" className="hover:text-white hover-lift inline-block">
                   {getTranslatedText('footer.quickLinks.about', 'About Us')}
                 </Link>

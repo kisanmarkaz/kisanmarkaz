@@ -87,12 +87,7 @@ export function useListings(filters?: {
         query = query.lte('quantity', filters.quantityMax);
       }
 
-      // Apply sorting - featured listings should appear first when not specifically filtering
-      if (!filters?.featured) {
-        // Sort by featured status first (active featured listings first), then by other criteria
-        query = query.order('featured_listings.featured_from', { ascending: false, nullsFirst: false });
-      }
-      
+      // Apply sorting
       switch (filters?.sortBy) {
         case 'oldest':
           query = query.order('created_at', { ascending: true });
@@ -111,6 +106,19 @@ export function useListings(filters?: {
 
       const { data, error } = await query;
       if (error) throw error;
+      
+      // Sort featured listings to the top when not specifically filtering for featured only
+      if (!filters?.featured && data) {
+        return data.sort((a, b) => {
+          const aIsFeatured = a.featured_listings && a.featured_listings.length > 0;
+          const bIsFeatured = b.featured_listings && b.featured_listings.length > 0;
+          
+          if (aIsFeatured && !bIsFeatured) return -1;
+          if (!aIsFeatured && bIsFeatured) return 1;
+          return 0; // Keep original order for same type
+        });
+      }
+      
       return data;
     }
   });

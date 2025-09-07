@@ -34,7 +34,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: 'KisanMarkaz <no-reply@kisanmarkaz.com>', to, subject, html }),
+      body: JSON.stringify({ from: 'KisanMarkaz <onboarding@resend.dev>', to, subject, html }),
     });
 
     const json = await resp.json();

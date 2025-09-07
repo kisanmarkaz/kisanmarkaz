@@ -160,6 +160,40 @@ const ListingDetail = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
+        {/* Listing Title */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <Link to="/search" className="text-gray-500 hover:text-gray-700">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900">{listing.title}</h1>
+                {listing.featured_listings && listing.featured_listings.length > 0 && (
+                  <span className="bg-yellow-500 text-gray-900 px-3 py-1 text-sm font-semibold rounded-full shadow-lg">
+                    ⭐ FEATURED
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-4 text-gray-600">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  <span>{listing.location_city}, {listing.location_province}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>{format(new Date(listing.created_at), 'MMM d, yyyy')}</span>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-green-600">
+                Rs {listing.price?.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Images and Details */}

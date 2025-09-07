@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Filter, Grid, List, MapPin, Calendar, Heart, Truck, CreditCard, Leaf } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Filter, Grid, List, MapPin, Calendar, Heart, Truck, CreditCard, Leaf, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Layout from '@/components/Layout';
-import { useCategories, useSubcategories } from '@/hooks/useCategories';
-import { useListings } from '@/hooks/useListings';
+import { useFeaturedListings } from '@/hooks/useListings';
 import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import AdScript from '@/components/AdScript';
 
-const Category = () => {
-  const { categoryId } = useParams();
+const FeaturedListingsPage = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [condition, setCondition] = useState<string>('all');
@@ -26,23 +23,7 @@ const Category = () => {
   const [quantityMin, setQuantityMin] = useState('');
   const [quantityMax, setQuantityMax] = useState('');
 
-  const { data: categories } = useCategories();
-  const category = categories?.find(cat => cat.slug === categoryId);
-  const { data: subcategories } = useSubcategories(category?.id);
-  
-  const { data: listings, isLoading } = useListings({
-    categoryId: category?.id,
-    subcategoryId: selectedSubcategory === 'all' ? undefined : selectedSubcategory,
-    priceMin: priceMin ? parseFloat(priceMin) : undefined,
-    priceMax: priceMax ? parseFloat(priceMax) : undefined,
-    condition: condition === 'all' ? undefined : condition as any,
-    deliveryAvailable: deliveryAvailable === 'all' ? undefined : deliveryAvailable === 'yes',
-    paymentTerms: paymentTerms === 'all' ? undefined : paymentTerms as any,
-    organic: organic === 'all' ? undefined : organic === 'yes',
-    quantityMin: quantityMin ? parseFloat(quantityMin) : undefined,
-    quantityMax: quantityMax ? parseFloat(quantityMax) : undefined
-  });
-
+  const { data: featuredListings, isLoading, error } = useFeaturedListings();
   const { data: favorites } = useFavorites();
   const { user } = useAuth();
   const toggleFavorite = useToggleFavorite();
@@ -59,21 +40,93 @@ const Category = () => {
     });
   };
 
-  if (!category) {
-    return <div>Category not found</div>;
+  // Filter and sort the listings
+  let filteredListings = featuredListings || [];
+  
+  // Apply filters
+  if (priceMin) {
+    filteredListings = filteredListings.filter(listing => listing.price >= parseFloat(priceMin));
+  }
+  if (priceMax) {
+    filteredListings = filteredListings.filter(listing => listing.price <= parseFloat(priceMax));
+  }
+  if (condition !== 'all') {
+    filteredListings = filteredListings.filter(listing => listing.condition === condition);
+  }
+  if (deliveryAvailable !== 'all') {
+    filteredListings = filteredListings.filter(listing => 
+      deliveryAvailable === 'yes' ? listing.delivery_available === 'yes' : listing.delivery_available === 'no'
+    );
+  }
+  if (paymentTerms !== 'all') {
+    filteredListings = filteredListings.filter(listing => listing.payment_terms === paymentTerms);
+  }
+  if (organic !== 'all') {
+    filteredListings = filteredListings.filter(listing => 
+      organic === 'yes' ? listing.organic === 'yes' : listing.organic === 'no'
+    );
+  }
+  if (quantityMin) {
+    filteredListings = filteredListings.filter(listing => listing.quantity >= parseFloat(quantityMin));
+  }
+  if (quantityMax) {
+    filteredListings = filteredListings.filter(listing => listing.quantity <= parseFloat(quantityMax));
+  }
+
+  // Apply sorting
+  filteredListings = [...filteredListings].sort((a, b) => {
+    switch (sortBy) {
+      case 'oldest':
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case 'price-low':
+        return a.price - b.price;
+      case 'price-high':
+        return b.price - a.price;
+      case 'newest':
+      default:
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+  });
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-red-500 text-2xl">⚠️</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Featured Listings</h3>
+              <p className="text-gray-600 mb-6">
+                There was an error loading the featured listings. Please try again later.
+              </p>
+              <p className="text-sm text-gray-500">
+                Error: {error.message}
+              </p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-      {/* Category Header */}
-      <div className="bg-green-50">
+      {/* Featured Listings Header */}
+      <div className="bg-gradient-to-r from-yellow-50 to-green-50">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{category.name}</h1>
-          <p className="text-gray-600 mb-4">{category.description}</p>
+          <div className="flex items-center mb-4">
+            <Star className="h-8 w-8 text-yellow-500 mr-3" />
+            <h1 className="text-3xl font-bold text-gray-900">Featured Listings</h1>
+          </div>
+          <p className="text-gray-600 mb-4">
+            Discover premium listings that stand out from the crowd. These listings have been specially promoted to get maximum visibility.
+          </p>
           
           {/* Breadcrumb */}
           <nav className="text-sm text-gray-500">
-            <span>Home</span> &gt; <span className="text-green-600">{category.name}</span>
+            <span>Home</span> &gt; <span className="text-yellow-600">Featured Listings</span>
           </nav>
         </div>
       </div>
@@ -87,24 +140,6 @@ const Category = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
               </h3>
-
-              {/* Subcategories */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subcategory
-                </label>
-                <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All subcategories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All subcategories</SelectItem>
-                    {subcategories?.map((sub) => (
-                      <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               
               {/* Price Range */}
               <div className="mb-6">
@@ -227,7 +262,11 @@ const Category = () => {
             {/* Controls */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
               <div className="flex items-center space-x-4">
-                <span className="text-gray-600">{listings?.length || 0} results found</span>
+                <span className="text-gray-600">{filteredListings.length} featured listings found</span>
+                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full flex items-center">
+                  <Star className="h-3 w-3 mr-1" />
+                  Featured
+                </span>
               </div>
               
               <div className="flex items-center space-x-4">
@@ -282,9 +321,9 @@ const Category = () => {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : filteredListings.length > 0 ? (
               <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-                {listings?.map((listing) => (
+                {filteredListings.map((listing) => (
                   <Link
                     key={listing.id}
                     to={`/listing/${listing.id}`}
@@ -295,13 +334,11 @@ const Category = () => {
                         <img
                           src={listing.images?.[0] || "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=300&fit=crop"}
                           alt={listing.title}
-                          className="w-full h-48 object-cover"
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        {listing.featured_listings && listing.featured_listings.length > 0 && (
-                          <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded z-10 shadow-lg">
-                            FEATURED
-                          </span>
-                        )}
+                        <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded z-10 shadow-lg">
+                          FEATURED
+                        </span>
                         {listing.urgent && (
                           <span className="absolute top-2 right-12 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
                             URGENT
@@ -322,15 +359,26 @@ const Category = () => {
                         )}
                       </div>
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{listing.title}</h3>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                            {listing.category?.name}
+                          </span>
+                          <span className="text-lg font-bold text-green-600">
+                            PKR {listing.price?.toLocaleString()}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                          {listing.title}
+                        </h3>
                         <div className="flex items-center text-sm text-gray-500 mb-2">
                           <MapPin className="h-4 w-4 mr-1" />
                           {listing.location_city}, {listing.location_province}
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold text-green-600">
-                            PKR {listing.price.toLocaleString()}
-                          </span>
+                          <div className="flex items-center text-xs text-gray-400">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {format(new Date(listing.created_at), 'MMM d, yyyy')}
+                          </div>
                           {listing.delivery_available === 'yes' && (
                             <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full flex items-center">
                               <Truck className="h-3 w-3 mr-1" />
@@ -343,6 +391,40 @@ const Category = () => {
                   </Link>
                 ))}
               </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="max-w-md mx-auto">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Star className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Featured Listings Found</h3>
+                  <p className="text-gray-600 mb-6">
+                    No featured listings match your current filters. Try adjusting your search criteria or browse all listings.
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setPriceMin('');
+                        setPriceMax('');
+                        setCondition('all');
+                        setDeliveryAvailable('all');
+                        setPaymentTerms('all');
+                        setOrganic('all');
+                        setQuantityMin('');
+                        setQuantityMax('');
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                    <Link to="/search">
+                      <Button className="bg-green-600 hover:bg-green-700">
+                        Browse All Listings
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -351,4 +433,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default FeaturedListingsPage;

@@ -35,6 +35,7 @@ import ShippingPolicy from "./pages/ShippingPolicy";
 import Services from "./pages/Services";
 import NewService from "./pages/NewService";
 import FeatureListing from "./pages/FeatureListing";
+import FeaturedListingsPage from "./pages/FeaturedListingsPage";
 import AdminFeaturedRequests from "./pages/AdminFeaturedRequests";
 // Removed Paddle payment routes
 
@@ -72,6 +73,7 @@ const AnimatedRoutes = () => {
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/new" element={<NewService />} />
+        <Route path="/featured" element={<FeaturedListingsPage />} />
         <Route path="/listing/:id/feature" element={<FeatureListing />} />
         <Route path="/admin/featured-requests" element={<AdminFeaturedRequests />} />
         {/* Payment routes removed */}
