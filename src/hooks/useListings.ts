@@ -21,6 +21,44 @@ export function useListings(filters?: {
   return useQuery({
     queryKey: ['listings', filters],
     queryFn: async () => {
+      // Special handling for featured listings to avoid RLS on joined table
+      if (filters?.featured) {
+        const { data: activeFeatured, error: activeErr } = await supabase
+          .from('active_featured_listings')
+          .select('listing_id, created_at')
+          .order('created_at', { ascending: false });
+        if (activeErr) throw activeErr;
+
+        const listingIds = (activeFeatured || []).map((row: any) => row.listing_id);
+        if (listingIds.length === 0) return [];
+
+        const orderIndexById = new Map<string, number>(listingIds.map((id, idx) => [id, idx]));
+
+        const { data: featuredData, error: listErr } = await supabase
+          .from('listings')
+          .select(`
+            *,
+            category:categories(*),
+            subcategory:subcategories(*),
+            featured_listings!left(
+              id,
+              featured_from,
+              featured_until,
+              status
+            )
+          `)
+          .in('id', listingIds)
+          .eq('status', 'active');
+        if (listErr) throw listErr;
+
+        return (featuredData || []).sort((a: any, b: any) => {
+          const ai = orderIndexById.get(a.id) ?? 0;
+          const bi = orderIndexById.get(b.id) ?? 0;
+          return ai - bi;
+        });
+      }
+
+      // Default non-featured query path
       let query = supabase
         .from('listings')
         .select(`
@@ -56,15 +94,6 @@ export function useListings(filters?: {
       }
       if (filters?.priceMax) {
         query = query.lte('price', filters.priceMax);
-      }
-      if (filters?.featured) {
-        // Only show currently active featured listings
-        const now = new Date().toISOString();
-        query = query
-          .not('featured_listings', 'is', null)
-          .eq('featured_listings.status', 'active')
-          .lte('featured_listings.featured_from', now)
-          .gte('featured_listings.featured_until', now);
       }
       
       // New filters
