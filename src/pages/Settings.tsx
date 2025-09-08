@@ -31,11 +31,12 @@ interface PreferencesState {
 }
 
 const Settings = () => {
-  const { user, updateProfile, updatePassword, updatePreferences } = useAuth();
+  const { user, getProfile, updateProfile, updatePassword, updatePreferences } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   // Profile Settings
   const [profileForm, setProfileForm] = useState({
@@ -45,6 +46,36 @@ const Settings = () => {
     city: user?.user_metadata?.city || '',
     province: user?.user_metadata?.province || ''
   });
+
+  // Load persisted profile from Supabase on mount/auth change
+  React.useEffect(() => {
+    const load = async () => {
+      if (!user) return;
+      try {
+        setProfileLoading(true);
+        const data = await getProfile();
+        if (data) {
+          setProfileForm({
+            fullName: data.full_name || '',
+            phone: data.phone || '',
+            address: data.address || '',
+            city: data.city || '',
+            province: data.province || ''
+          });
+        }
+      } catch (e) {
+        // Non-blocking; surface as toast for visibility
+        toast({
+          title: t('common.error'),
+          description: t('settings.profile.updateError'),
+          variant: 'destructive'
+        });
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+    load();
+  }, [user?.id]);
 
   // Password Settings
   const [passwordForm, setPasswordForm] = useState({
@@ -275,7 +306,9 @@ const Settings = () => {
                       />
                     </div>
                   </div>
-                  <Button type="submit" className="mt-4">{t('common.save')}</Button>
+                  <Button type="submit" className="mt-4" disabled={profileLoading}>
+                    {profileLoading ? <LoadingSpinner /> : t('common.save')}
+                  </Button>
                 </form>
               </div>
             </TabsContent>

@@ -8,7 +8,21 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ data: any; error: any }>;
   signOut: () => Promise<void>;
-  updateProfile: (profile: any) => Promise<void>;
+  getProfile: () => Promise<{
+    id: string;
+    full_name: string | null;
+    phone: string | null;
+    address: string | null;
+    city: string | null;
+    province: string | null;
+  } | null>;
+  updateProfile: (profile: {
+    full_name?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    city?: string | null;
+    province?: string | null;
+  }) => Promise<void>;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   updatePreferences: (preferences: any) => Promise<void>;
 }
@@ -61,14 +75,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   };
 
-  const updateProfile = async (profile: any) => {
-    if (!user) throw new Error('No user logged in');
-    
-    const { error } = await supabase.auth.updateUser({
-      data: profile
-    });
-
+  const getProfile = async () => {
+    if (!user) return null;
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, full_name, phone, address, city, province')
+      .eq('id', user.id)
+      .maybeSingle();
     if (error) throw error;
+    return data;
+  };
+
+  const updateProfile = async (profile: {
+    full_name?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    city?: string | null;
+    province?: string | null;
+  }) => {
+    if (!user) throw new Error('No user logged in');
+
+    const upsertPayload = {
+      id: user.id,
+      full_name: profile.full_name ?? null,
+      phone: profile.phone ?? null,
+      address: profile.address ?? null,
+      city: profile.city ?? null,
+      province: profile.province ?? null,
+    };
+
+    const { error: upsertError } = await supabase
+      .from('profiles')
+      .upsert(upsertPayload, { onConflict: 'id' });
+
+    if (upsertError) throw upsertError;
+
+    // Also mirror basic fields in auth user metadata for quick access
+    const { error: metaError } = await supabase.auth.updateUser({
+      data: {
+        full_name: upsertPayload.full_name,
+        address: upsertPayload.address,
+        city: upsertPayload.city,
+        province: upsertPayload.province,
+      }
+    });
+    if (metaError) throw metaError;
   };
 
   const updatePassword = async (currentPassword: string, newPassword: string) => {
@@ -112,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signIn,
     signOut,
+    getProfile,
     updateProfile,
     updatePassword,
     updatePreferences,
