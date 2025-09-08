@@ -133,22 +133,46 @@ export function useListings(filters?: {
           break;
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
-      
-      // Sort featured listings to the top when not specifically filtering for featured only
-      if (!filters?.featured && data) {
-        return data.sort((a, b) => {
-          const aIsFeatured = a.featured_listings && a.featured_listings.length > 0;
-          const bIsFeatured = b.featured_listings && b.featured_listings.length > 0;
-          
-          if (aIsFeatured && !bIsFeatured) return -1;
-          if (!aIsFeatured && bIsFeatured) return 1;
-          return 0; // Keep original order for same type
-        });
-      }
-      
-      return data;
+      // Fetch listings and active featured IDs in parallel so RLS doesn't hide featured state
+      const [listingsRes, activeRes] = await Promise.all([
+        query,
+        supabase.from('active_featured_listings').select('listing_id')
+      ]);
+
+      if (listingsRes.error) throw listingsRes.error;
+      if (activeRes.error) throw activeRes.error;
+
+      const data = listingsRes.data || [];
+      const activeIds = new Set((activeRes.data || []).map((r: any) => r.listing_id));
+
+      // Ensure items in the active set are marked as featured locally (for badges) and sorted to top
+      const normalized = data.map((item: any) => {
+        const isActive = activeIds.has(item.id);
+        if (isActive) {
+          if (!item.featured_listings || item.featured_listings.length === 0) {
+            item.featured_listings = [{ id: 'active', status: 'active' }];
+          } else {
+            // Ensure only active state is considered for downstream badge checks
+            item.featured_listings = item.featured_listings.filter((fl: any) => fl.status === 'active');
+            if (item.featured_listings.length === 0) {
+              item.featured_listings = [{ id: 'active', status: 'active' }];
+            }
+          }
+        } else {
+          // If not in the active view, force-clear any joined featured rows
+          // to avoid stale badges when table status wasn't expired yet
+          item.featured_listings = [];
+        }
+        return item;
+      });
+
+      return normalized.sort((a: any, b: any) => {
+        const aIsFeatured = a.featured_listings && a.featured_listings.some((fl: any) => fl.status === 'active');
+        const bIsFeatured = b.featured_listings && b.featured_listings.some((fl: any) => fl.status === 'active');
+        if (aIsFeatured && !bIsFeatured) return -1;
+        if (!aIsFeatured && bIsFeatured) return 1;
+        return 0;
+      });
     }
   });
 }

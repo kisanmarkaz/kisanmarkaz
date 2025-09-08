@@ -298,7 +298,7 @@ const Category = () => {
                           alt={listing.title}
                           className="w-full h-48 object-cover"
                         />
-                        {listing.featured_listings && listing.featured_listings.length > 0 && (
+                        {listing.featured_listings && listing.featured_listings.some((fl: any) => fl.status === 'active') && (
                           <FeaturedListingBadge position="top-left" />
                         )}
                         {listing.urgent && (

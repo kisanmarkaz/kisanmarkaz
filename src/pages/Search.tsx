@@ -250,7 +250,9 @@ const Search = () => {
             <AdScript />
 
             {/* Featured Listings Section */}
-            {listings && listings.some(listing => listing.featured_listings && listing.featured_listings.length > 0) && (
+            {listings && listings.some(listing =>
+              listing.featured_listings && listing.featured_listings.some((fl: any) => fl.status === 'active')
+            ) && (
               <div className="mb-6">
                 <div className="flex items-center mb-4">
                   <div className="flex items-center">
@@ -294,10 +296,7 @@ const Search = () => {
                           alt={listing.title}
                           className="w-full h-48 object-cover"
                         />
-                        {listing.featured_listings && listing.featured_listings.length > 0 && (
-                          <FeaturedListingBadge position="top-left" />
-                        )}
-                        {listing.featured_listings && listing.featured_listings.length > 0 && (
+                        {listing.featured_listings && listing.featured_listings.some((fl: any) => fl.status === 'active') && (
                           <FeaturedListingBadge position="top-left" />
                         )}
                         {listing.urgent && (

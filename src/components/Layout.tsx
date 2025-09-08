@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import Header from './Header';
 import Footer from './Footer';
 import AdBanner from './AdBanner';
@@ -9,6 +10,18 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { user } = useAuth();
+
+  React.useEffect(() => {
+    const prefersDark = (user?.user_metadata as any)?.preferences?.darkMode === true;
+    const root = document.documentElement;
+    if (prefersDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [user?.id, user?.user_metadata]);
+
   // Function to recursively wrap direct children with ScrollReveal
   const wrapChildrenWithScrollReveal = (children: React.ReactNode): React.ReactNode => {
     return React.Children.map(children, (child, index) => {

@@ -112,6 +112,19 @@ const Settings = () => {
     }));
   }, [user?.id, user?.user_metadata]);
 
+  // Sync general preferences (including darkMode) from user metadata
+  React.useEffect(() => {
+    const meta = user?.user_metadata as any;
+    const saved = meta?.preferences || {};
+    setPreferences(prev => ({
+      language: (saved.language as Language) ?? prev.language,
+      currency: saved.currency ?? prev.currency,
+      darkMode: saved.darkMode ?? prev.darkMode,
+      showFavorites: saved.showFavorites ?? prev.showFavorites,
+      autoLocation: saved.autoLocation ?? prev.autoLocation,
+    }));
+  }, [user?.id, user?.user_metadata]);
+
   // Preferences Settings
   const [preferences, setPreferences] = useState<PreferencesState>({
     language: language,
@@ -216,6 +229,11 @@ const Settings = () => {
     setPreferences(prev => ({ ...prev, [key]: value }));
     try {
       await updatePreferences({ ...preferences, [key]: value });
+      if (key === 'darkMode') {
+        const root = document.documentElement;
+        if (value) root.classList.add('dark');
+        else root.classList.remove('dark');
+      }
       toast({
         title: t('common.success'),
         description: t('settings.preferences.updated'),
