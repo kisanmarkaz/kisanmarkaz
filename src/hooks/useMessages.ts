@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Message, Conversation } from '@/types/message';
 import { useAuth } from './useAuth';
+import { sendPushNotification } from '@/lib/pushNotification';
 
 export const useConversations = () => {
   const { user } = useAuth();
@@ -250,9 +251,62 @@ export const useSendMessage = () => {
 
       return data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['messages', variables.conversationId] });
       queryClient.invalidateQueries({ queryKey: ['conversations'] });
+
+      // Fetch conversation to determine recipient
+      const { data: conversation } = await supabase
+        .from('conversations')
+        .select('id, buyer_id, seller_id')
+        .eq('id', variables.conversationId)
+        .single();
+
+      if (!conversation) return;
+
+      const recipientId = user?.id === conversation.buyer_id ? conversation.seller_id : conversation.buyer_id;
+      if (!recipientId) return;
+
+      // Fetch recipient profile including preferences and email
+      const { data: recipientProfile } = await supabase
+        .from('user_profiles')
+        .select('id, email, raw_user_meta_data')
+        .eq('id', recipientId)
+        .single();
+
+      const prefs = (recipientProfile?.raw_user_meta_data as any)?.preferences?.notifications || {};
+
+      // Push notification
+      if (prefs.messageNotifications !== false) {
+        try {
+          await sendPushNotification(recipientId, 'You have a new message');
+        } catch (err) {
+          console.error('Failed to send push notification:', err);
+        }
+      }
+
+      // Email notification
+      if (prefs.emailNotifications) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session && recipientProfile?.email) {
+            await fetch(`${supabase.supabaseUrl}/functions/v1/send-email`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`
+              },
+              body: JSON.stringify({
+                to: recipientProfile.email,
+                subject: 'New message on Kisan Markaz',
+                html: '<p>You have a new message. Open the app to reply.</p>'
+              })
+            });
+          }
+        } catch (err) {
+          console.error('Failed to send email notification:', err);
+        }
+      }
     }
   });
 };

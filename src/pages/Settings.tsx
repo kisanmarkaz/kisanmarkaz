@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { PushNotificationToggle } from '@/components/PushNotificationToggle';
 import {
   Select,
   SelectContent,
@@ -53,14 +54,32 @@ const Settings = () => {
   });
 
   // Notification Settings
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    smsNotifications: true,
-    marketingEmails: false,
-    newListingAlerts: true,
-    messageNotifications: true,
-    priceDropAlerts: true
+  const [notificationSettings, setNotificationSettings] = useState(() => {
+    const meta = user?.user_metadata as any;
+    const saved = meta?.preferences?.notifications || {};
+    return {
+      emailNotifications: saved.emailNotifications ?? true,
+      smsNotifications: saved.smsNotifications ?? true,
+      marketingEmails: saved.marketingEmails ?? false,
+      newListingAlerts: saved.newListingAlerts ?? true,
+      messageNotifications: saved.messageNotifications ?? true,
+      priceDropAlerts: saved.priceDropAlerts ?? true,
+    };
   });
+
+  // Sync when user metadata changes
+  React.useEffect(() => {
+    const meta = user?.user_metadata as any;
+    const saved = meta?.preferences?.notifications || {};
+    setNotificationSettings(prev => ({
+      emailNotifications: saved.emailNotifications ?? prev.emailNotifications,
+      smsNotifications: saved.smsNotifications ?? prev.smsNotifications,
+      marketingEmails: saved.marketingEmails ?? prev.marketingEmails,
+      newListingAlerts: saved.newListingAlerts ?? prev.newListingAlerts,
+      messageNotifications: saved.messageNotifications ?? prev.messageNotifications,
+      priceDropAlerts: saved.priceDropAlerts ?? prev.priceDropAlerts,
+    }));
+  }, [user?.id, user?.user_metadata]);
 
   // Preferences Settings
   const [preferences, setPreferences] = useState<PreferencesState>({
@@ -301,6 +320,13 @@ const Settings = () => {
               <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h2 className="text-xl font-semibold mb-4">Notification Preferences</h2>
                 <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Push Notifications</Label>
+                      <p className="text-sm text-gray-500">Enable browser push notifications</p>
+                    </div>
+                    <PushNotificationToggle />
+                  </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label>Email Notifications</Label>

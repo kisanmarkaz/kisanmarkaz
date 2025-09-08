@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, ArrowLeft, Phone, Mail, Heart, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import FeaturedListingBadge from '@/components/FeaturedListingBadge';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -170,9 +171,7 @@ const ListingDetail = () => {
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold text-gray-900">{listing.title}</h1>
                 {listing.featured_listings && listing.featured_listings.length > 0 && (
-                  <span className="bg-yellow-500 text-gray-900 px-3 py-1 text-sm font-semibold rounded-full shadow-lg">
-                    ⭐ FEATURED
-                  </span>
+                  <FeaturedListingBadge position="inline" />
                 )}
               </div>
               <div className="flex items-center gap-4 text-gray-600">

@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import AdScript from '@/components/AdScript';
+import FeaturedListingBadge from '@/components/FeaturedListingBadge';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -294,9 +295,10 @@ const Search = () => {
                           className="w-full h-48 object-cover"
                         />
                         {listing.featured_listings && listing.featured_listings.length > 0 && (
-                          <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded z-10 shadow-lg">
-                            FEATURED
-                          </span>
+                          <FeaturedListingBadge position="top-left" />
+                        )}
+                        {listing.featured_listings && listing.featured_listings.length > 0 && (
+                          <FeaturedListingBadge position="top-left" />
                         )}
                         {listing.urgent && (
                           <span className="absolute top-2 left-20 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">

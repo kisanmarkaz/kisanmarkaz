@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Layout from '@/components/Layout';
+import FeaturedListingBadge from '@/components/FeaturedListingBadge';
 import { useFeaturedListings } from '@/hooks/useListings';
 import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import { useAuth } from '@/hooks/useAuth';
@@ -336,9 +337,7 @@ const FeaturedListingsPage = () => {
                           alt={listing.title}
                           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded z-10 shadow-lg">
-                          FEATURED
-                        </span>
+                        <FeaturedListingBadge position="top-left" />
                         {listing.urgent && (
                           <span className="absolute top-2 right-12 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
                             URGENT

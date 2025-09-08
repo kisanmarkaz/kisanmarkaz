@@ -1,5 +1,6 @@
 
 import React from 'react';
+import FeaturedListingBadge from '@/components/FeaturedListingBadge';
 import { Heart, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useFeaturedListings } from '@/hooks/useListings';
@@ -64,12 +65,6 @@ const FeaturedListings = () => {
     });
   };
 
-  // Debug logging
-  console.log('FeaturedListings - isLoadingFeatured:', isLoadingFeatured);
-  console.log('FeaturedListings - isLoadingLatest:', isLoadingLatest);
-  console.log('FeaturedListings - featuredListings:', featuredListings);
-  console.log('FeaturedListings - latestListings:', latestListings);
-  console.log('FeaturedListings - combinedListings:', combinedListings);
 
   if (isLoadingFeatured || isLoadingLatest) {
     return (
@@ -118,11 +113,8 @@ const FeaturedListings = () => {
                     alt={listing.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {listing.featured_listings && listing.featured_listings.length > 0 && (
-                    <span className="absolute top-2 left-2 bg-yellow-500 text-gray-900 px-2 py-1 text-xs font-semibold rounded">
-                      FEATURED
-                    </span>
-                  )}
+                  {/* Always show FEATURED tag for listings in featured section */}
+                  <FeaturedListingBadge position="top-left" />
                   {listing.urgent && (
                     <span className="absolute top-2 right-12 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
                       URGENT

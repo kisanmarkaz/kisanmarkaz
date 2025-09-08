@@ -30,6 +30,17 @@ export const usePushNotification = () => {
     }
   };
 
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
   const subscribeToNotifications = async () => {
     try {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -54,13 +65,15 @@ export const usePushNotification = () => {
         return existingSubscription;
       }
 
-      // Generate VAPID key pair on your server and store it securely
-      const response = await fetch('/api/vapid-public-key');
-      const vapidPublicKey = await response.text();
+      // Read public VAPID key from environment (must be URL-safe base64)
+      const vapidPublicKey = (import.meta as any)?.env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
+      if (!vapidPublicKey) {
+        throw new Error('Missing VAPID public key. Set VITE_VAPID_PUBLIC_KEY in your environment.');
+      }
       
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: vapidPublicKey
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
       });
 
       const subscriptionData = subscription.toJSON() as PushSubscriptionData;
