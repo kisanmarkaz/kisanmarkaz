@@ -32,7 +32,7 @@ interface ListingFieldValue {
   id: string;
   listing_id: string;
   field_id: string;
-  field_value: string;
+  field_value: string | boolean | number | null;
   field?: CategoryField;
 }
 
@@ -319,18 +319,31 @@ const ListingDetail = () => {
             <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
               <h2 className="text-xl font-semibold mb-4">Additional Details</h2>
               <div className="grid grid-cols-2 gap-4">
-                {listing.field_values?.map((fieldValue) => (
-                  <div key={fieldValue.id}>
-                    <span className="text-gray-500">{fieldValue.field?.field_label}:</span>
-                    <span className="ml-2 text-gray-900">
-                      {fieldValue.field?.field_type === 'boolean' 
-                        ? (fieldValue.field_value === 'true' ? 'Yes' : 'No')
-                        : fieldValue.field?.field_type === 'date'
-                        ? format(new Date(fieldValue.field_value), 'MMM d, yyyy')
-                        : fieldValue.field_value}
-                    </span>
+                {listing.field_values && listing.field_values.length > 0 ? (
+                  listing.field_values.map((fieldValue) => {
+                    // Handle JSON field_value properly
+                    const value = typeof fieldValue.field_value === 'string' 
+                      ? fieldValue.field_value 
+                      : JSON.stringify(fieldValue.field_value);
+                    
+                    return (
+                      <div key={fieldValue.id}>
+                        <span className="text-gray-500">{fieldValue.field?.field_label}:</span>
+                        <span className="ml-2 text-gray-900">
+                          {fieldValue.field?.field_type === 'boolean' 
+                            ? (value === 'true' || value === true ? 'Yes' : 'No')
+                            : fieldValue.field?.field_type === 'date'
+                            ? format(new Date(value), 'MMM d, yyyy')
+                            : value}
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-2 text-gray-500 italic">
+                    No additional details available for this listing.
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

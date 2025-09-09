@@ -240,16 +240,7 @@ const Sell = () => {
 
       if (error) throw error;
 
-      // If featured selected, redirect to manual payment instructions
-      if (selectedFeaturedDuration) {
-        navigate(`/listing/${inserted.id}/feature?plan=${selectedFeaturedDuration}`);
-        return;
-      }
-      
-      toast({ title: 'Listing created', description: 'Your listing has been created successfully.' });
-      navigate(`/listing/${inserted.id}`);
-
-      // Save category-specific field values
+      // Save category-specific field values before navigation
       if (fields && fields.length > 0 && inserted) {
         const fieldValues = fields.map(field => ({
           listing_id: inserted.id,
@@ -270,6 +261,15 @@ const Sell = () => {
 
         console.log('Category field values saved successfully');
       }
+
+      // If featured selected, redirect to manual payment instructions
+      if (selectedFeaturedDuration) {
+        navigate(`/listing/${inserted.id}/feature?plan=${selectedFeaturedDuration}`);
+        return;
+      }
+      
+      toast({ title: 'Listing created', description: 'Your listing has been created successfully.' });
+      navigate(`/listing/${inserted.id}`);
 
     } catch (error: any) {
       console.error('Error creating listing:', error);
