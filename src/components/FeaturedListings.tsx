@@ -21,15 +21,23 @@ const FeaturedListings = () => {
   const ref = React.useRef(null);
   const isInView = React.useRef(false);
 
-  // Show maximum 3 featured listings, or latest listings if no featured ones
-  let combinedListings = [];
-  if (featuredListings && featuredListings.length > 0) {
-    // Show up to 3 featured listings
-    combinedListings = featuredListings.slice(0, 3);
-  } else if (latestListings && latestListings.length > 0) {
-    // If no featured listings, show up to 3 latest listings
-    combinedListings = latestListings.slice(0, 3);
-  }
+  // Helper to check current featured status (aligns with ListingCard logic)
+  const isCurrentlyFeatured = (listing: any) => {
+    return Boolean(
+      listing?.featured_listings &&
+      listing.featured_listings.length > 0 &&
+      listing.featured_listings.some((fl: any) =>
+        fl.status === 'active' &&
+        new Date(fl.featured_from) <= new Date() &&
+        new Date(fl.featured_until) >= new Date()
+      )
+    );
+  };
+
+  // Only show currently active featured listings (no fallback to latest)
+  const combinedListings: any[] = (featuredListings || [])
+    .filter(isCurrentlyFeatured)
+    .slice(0, 3);
 
   // Check if element is in view
   React.useEffect(() => {
@@ -113,8 +121,10 @@ const FeaturedListings = () => {
                     alt={listing.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {/* Always show FEATURED tag for listings in featured section */}
-                  <FeaturedListingBadge position="top-left" />
+                  {/* Show FEATURED tag only when the listing is currently featured */}
+                  {isCurrentlyFeatured(listing) && (
+                    <FeaturedListingBadge position="top-left" />
+                  )}
                   {listing.urgent && (
                     <span className="absolute top-2 right-12 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
                       URGENT
@@ -154,24 +164,7 @@ const FeaturedListings = () => {
             </Link>
             ))}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ArrowRight className="h-6 w-6 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Listings Available</h3>
-              <p className="text-gray-600 mb-4">
-                There are currently no featured or recent listings to display.
-              </p>
-              <Link to="/search">
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Browse All Listings
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
+        ) : null}
       </div>
     </section>
   );

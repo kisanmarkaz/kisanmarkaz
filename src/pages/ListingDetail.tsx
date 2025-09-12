@@ -421,8 +421,14 @@ const ListingDetail = () => {
 
       {/* Image Gallery Modal */}
       {selectedImageIndex !== null && listing.images && listing.images.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center">
-          <div className="relative max-w-4xl w-full">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center"
+          onClick={() => setSelectedImageIndex(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img
               src={listing.images[selectedImageIndex]}
               alt={`Image ${selectedImageIndex + 1}`}
