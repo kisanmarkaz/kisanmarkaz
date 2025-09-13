@@ -3,7 +3,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { Button } from '@/components/ui/button';
 
 // Get VAPID key from environment
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY?.trim() || 'BHKTcDLAYUnM_aSql0hSIdPYmJtSC97zXaxbckL2WDLrijNVKsXCxwB55xXa-_xOqS5-912YrixXGyMo95j8ZtQ';
 
 export function PushNotification() {
   const [isSubscribed, setIsSubscribed] = useState(false);

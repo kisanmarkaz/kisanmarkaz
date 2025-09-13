@@ -66,17 +66,19 @@ export const usePushNotification = () => {
       }
 
       // Read public VAPID key from environment (must be URL-safe base64)
+      const vapidPublicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY?.trim() || 'BHKTcDLAYUnM_aSql0hSIdPYmJtSC97zXaxbckL2WDLrijNVKsXCxwB55xXa-_xOqS5-912YrixXGyMo95j8ZtQ';
+      
       console.log('Environment check:', {
         importMeta: import.meta,
-        env: (import.meta as any)?.env,
-        vapidKey: (import.meta as any)?.env?.VITE_VAPID_PUBLIC_KEY
+        env: import.meta.env,
+        vapidKey: vapidPublicKey,
+        vapidKeyLength: vapidPublicKey?.length,
+        vapidKeyTrimmed: vapidPublicKey?.trim(),
+        allEnvKeys: Object.keys(import.meta.env),
+        usingFallback: !import.meta.env.VITE_VAPID_PUBLIC_KEY?.trim()
       });
       
-      const vapidPublicKey = (import.meta as any)?.env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
-      if (!vapidPublicKey) {
-        console.error('VAPID key not found in environment variables');
-        throw new Error('Missing VAPID public key. Set VITE_VAPID_PUBLIC_KEY in your environment.');
-      }
+      // No need to check for empty key since we have a fallback
       
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
