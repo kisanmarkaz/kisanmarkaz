@@ -11,7 +11,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('Farmer OLX Harvest', options)
+    self.registration.showNotification('Kisan Markaz', options)
   );
 });
 

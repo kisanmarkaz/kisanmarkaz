@@ -66,8 +66,15 @@ export const usePushNotification = () => {
       }
 
       // Read public VAPID key from environment (must be URL-safe base64)
+      console.log('Environment check:', {
+        importMeta: import.meta,
+        env: (import.meta as any)?.env,
+        vapidKey: (import.meta as any)?.env?.VITE_VAPID_PUBLIC_KEY
+      });
+      
       const vapidPublicKey = (import.meta as any)?.env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
       if (!vapidPublicKey) {
+        console.error('VAPID key not found in environment variables');
         throw new Error('Missing VAPID public key. Set VITE_VAPID_PUBLIC_KEY in your environment.');
       }
       

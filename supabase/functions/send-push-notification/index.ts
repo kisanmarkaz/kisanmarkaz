@@ -13,7 +13,7 @@ if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !SUPABASE_URL || !SUPABASE_SERVIC
 
 // Initialize WebPush with your VAPID keys
 webpush.setVapidDetails(
-  'mailto:your-email@example.com', // Replace with your email
+  'mailto:admin@kisanmarkaz.com', // Replace with your actual email
   VAPID_PUBLIC_KEY,
   VAPID_PRIVATE_KEY
 )

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { Button } from '@/components/ui/button';
 
-const VAPID_PUBLIC_KEY = 'YOUR_VAPID_PUBLIC_KEY'; // You'll need to replace this
+// Get VAPID key from environment
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
 export function PushNotification() {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -13,7 +14,7 @@ export function PushNotification() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
+        .register('/service-worker.js')
         .then((reg) => {
           setRegistration(reg);
           checkSubscription(reg);
