@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bell, Settings as SettingsIcon, Shield, Languages, Phone, Mail, MapPin } from 'lucide-react';
+import { User, Bell, Settings as SettingsIcon, Languages, Phone, Mail, MapPin } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,7 @@ interface PreferencesState {
 }
 
 const Settings = () => {
-  const { user, getProfile, updateProfile, updatePassword, updatePreferences } = useAuth();
+  const { user, getProfile, updateProfile, updatePreferences } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
@@ -76,13 +76,6 @@ const Settings = () => {
     };
     load();
   }, [user?.id]);
-
-  // Password Settings
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
 
   // Notification Settings
   const [notificationSettings, setNotificationSettings] = useState(() => {
@@ -152,32 +145,6 @@ const Settings = () => {
       toast({
         title: t('common.error'),
         description: t('settings.profile.updateError'),
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New passwords do not match.",
-        variant: "destructive"
-      });
-      return;
-    }
-    try {
-      await updatePassword(passwordForm.currentPassword, passwordForm.newPassword);
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      toast({
-        title: "Password Updated",
-        description: "Your password has been successfully updated.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update password. Please check your current password.",
         variant: "destructive"
       });
     }
@@ -259,10 +226,6 @@ const Settings = () => {
                 <User className="h-4 w-4" />
                 {t('common.profile')}
               </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                {t('common.security')}
-              </TabsTrigger>
               <TabsTrigger value="notifications" className="flex items-center gap-2">
                 <Bell className="h-4 w-4" />
                 {t('common.notifications')}
@@ -327,42 +290,6 @@ const Settings = () => {
                   <Button type="submit" className="mt-4" disabled={profileLoading}>
                     {profileLoading ? <LoadingSpinner /> : t('common.save')}
                   </Button>
-                </form>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="security" className="space-y-4">
-              <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-                <form onSubmit={handlePasswordSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input
-                      id="currentPassword"
-                      type="password"
-                      value={passwordForm.currentPassword}
-                      onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={passwordForm.newPassword}
-                      onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={passwordForm.confirmPassword}
-                      onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    />
-                  </div>
-                  <Button type="submit">Update Password</Button>
                 </form>
               </div>
             </TabsContent>

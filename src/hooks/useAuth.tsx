@@ -5,8 +5,6 @@ import type { User } from '@supabase/supabase-js';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ data: any; error: any }>;
   signOut: () => Promise<void>;
   getProfile: () => Promise<{
     id: string;
@@ -23,7 +21,6 @@ interface AuthContextType {
     city?: string | null;
     province?: string | null;
   }) => Promise<void>;
-  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   updatePreferences: (preferences: any) => Promise<void>;
 }
 
@@ -48,27 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName
-        }
-      }
-    });
-    return { data, error };
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
-  };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -122,25 +98,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (metaError) throw metaError;
   };
 
-  const updatePassword = async (currentPassword: string, newPassword: string) => {
-    if (!user) throw new Error('No user logged in');
-
-    // First verify the current password
-    const { error: verifyError } = await supabase.auth.signInWithPassword({
-      email: user.email!,
-      password: currentPassword,
-    });
-
-    if (verifyError) throw new Error('Current password is incorrect');
-
-    // Then update to the new password
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
-
-    if (error) throw error;
-  };
-
   const updatePreferences = async (preferences: any) => {
     if (!user) throw new Error('No user logged in');
 
@@ -160,12 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
-    signUp,
-    signIn,
     signOut,
     getProfile,
     updateProfile,
-    updatePassword,
     updatePreferences,
   };
 
