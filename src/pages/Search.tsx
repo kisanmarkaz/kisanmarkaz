@@ -12,6 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import AdScript from '@/components/AdScript';
 import FeaturedListingBadge from '@/components/FeaturedListingBadge';
+import AdBanner160x300 from '@/components/AdBanner160x300';
+import AdBanner160x300Simple from '@/components/AdBanner160x300Simple';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -200,6 +202,11 @@ const Search = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Ad Banner 160x300 */}
+            <div className="hidden lg:block mt-6">
+              <AdBanner160x300 sticky={true} />
             </div>
           </div>
 

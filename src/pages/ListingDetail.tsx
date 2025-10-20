@@ -16,6 +16,7 @@ import Layout from '../components/Layout';
 import { useStartConversation } from '@/hooks/useMessages';
 import { useListingAnalytics } from '@/hooks/useListingAnalytics';
 import AdScript from '@/components/AdScript';
+import AdBanner160x300 from '@/components/AdBanner160x300';
 
 interface CategoryField {
   id: string;
@@ -350,69 +351,76 @@ const ListingDetail = () => {
 
           {/* Right Column - Seller Info */}
           <div className="lg:w-1/3">
-            {/* Seller information section */}
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
-              <h2 className="text-xl font-semibold mb-4">Seller Information</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-500">Name</label>
-                  <p className="font-medium">{listing.contact_name}</p>
-                </div>
-
-                {listing.contact_phone && (
+            <div className="sticky top-24 space-y-6">
+              {/* Seller information section */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold mb-4">Seller Information</h2>
+                
+                <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-gray-500">Phone</label>
-                    <div className="flex items-center gap-2">
-                      {showPhone ? (
-                        <p className="font-medium">{listing.contact_phone}</p>
-                      ) : (
-                        <p className="font-medium">••••••••••</p>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleShowPhone}
-                      >
-                        {showPhone ? 'Hide' : 'Show'}
-                      </Button>
-                    </div>
+                    <label className="text-sm text-gray-500">Name</label>
+                    <p className="font-medium">{listing.contact_name}</p>
                   </div>
-                )}
 
-                {listing.contact_email && (
-                  <div>
-                    <label className="text-sm text-gray-500">Email</label>
-                    <p className="font-medium">{listing.contact_email}</p>
-                  </div>
-                )}
-
-                <div className="pt-4">
-                  {user ? (
-                    user.id !== listing.user_id ? (
-                      <Button
-                        className="w-full"
-                        onClick={handleMessageSeller}
-                        disabled={startConversation.isPending}
-                      >
-                        Message Seller
-                      </Button>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-500 text-center">This is your listing</p>
-                        <Button className="w-full" variant="outline" onClick={() => navigate(`/listing/${listing.id}/feature`)}>
-                          <Star className="h-4 w-4 mr-2" /> Feature Listing
+                  {listing.contact_phone && (
+                    <div>
+                      <label className="text-sm text-gray-500">Phone</label>
+                      <div className="flex items-center gap-2">
+                        {showPhone ? (
+                          <p className="font-medium">{listing.contact_phone}</p>
+                        ) : (
+                          <p className="font-medium">••••••••••</p>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleShowPhone}
+                        >
+                          {showPhone ? 'Hide' : 'Show'}
                         </Button>
                       </div>
-                    )
-                  ) : (
-                    <Link to="/auth" className="block">
-                      <Button className="w-full">
-                        Login to Message Seller
-                      </Button>
-                    </Link>
+                    </div>
                   )}
+
+                  {listing.contact_email && (
+                    <div>
+                      <label className="text-sm text-gray-500">Email</label>
+                      <p className="font-medium">{listing.contact_email}</p>
+                    </div>
+                  )}
+
+                  <div className="pt-4">
+                    {user ? (
+                      user.id !== listing.user_id ? (
+                        <Button
+                          className="w-full"
+                          onClick={handleMessageSeller}
+                          disabled={startConversation.isPending}
+                        >
+                          Message Seller
+                        </Button>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-sm text-gray-500 text-center">This is your listing</p>
+                          <Button className="w-full" variant="outline" onClick={() => navigate(`/listing/${listing.id}/feature`)}>
+                            <Star className="h-4 w-4 mr-2" /> Feature Listing
+                          </Button>
+                        </div>
+                      )
+                    ) : (
+                      <Link to="/auth" className="block">
+                        <Button className="w-full">
+                          Login to Message Seller
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
+              </div>
+
+              {/* Ad Banner 160x300 */}
+              <div className="hidden lg:block">
+                <AdBanner160x300 sticky={false} />
               </div>
             </div>
           </div>

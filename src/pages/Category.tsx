@@ -12,6 +12,7 @@ import { useFavorites, useToggleFavorite } from '@/hooks/useFavorites';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import AdScript from '@/components/AdScript';
+import AdBanner160x300 from '@/components/AdBanner160x300';
 
 const Category = () => {
   const { categoryId } = useParams();
@@ -220,6 +221,11 @@ const Category = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            {/* Ad Banner 160x300 */}
+            <div className="hidden lg:block mt-6">
+              <AdBanner160x300 sticky={true} />
             </div>
           </div>
 

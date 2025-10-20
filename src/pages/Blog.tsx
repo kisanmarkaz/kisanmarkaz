@@ -3,6 +3,7 @@ import { Calendar, User, Clock, ChevronRight } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import AdBanner160x300 from '@/components/AdBanner160x300';
 
 const Blog = () => {
   const blogPosts = [
@@ -148,39 +149,47 @@ const Blog = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map(post => (
-            <article key={post.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
-              <div className="p-6">
-                <div className="text-sm text-green-600 mb-2">{post.category}</div>
-                <h2 className="text-xl font-semibold mb-2 hover:text-green-600 transition-colors duration-200">
-                  <Link to={`/blog/${post.id}`} className="hover:text-green-600">
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center space-x-4">
-                    <span className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      {post.author}
-                    </span>
-                    <span className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {post.date}
-                    </span>
-                    <span className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {post.readTime}
-                    </span>
+          {blogPosts.map((post, index) => (
+            <React.Fragment key={post.id}>
+              <article className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+                <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
+                <div className="p-6">
+                  <div className="text-sm text-green-600 mb-2">{post.category}</div>
+                  <h2 className="text-xl font-semibold mb-2 hover:text-green-600 transition-colors duration-200">
+                    <Link to={`/blog/${post.id}`} className="hover:text-green-600">
+                      {post.title}
+                    </Link>
+                  </h2>
+                  <p className="text-gray-600 mb-4">{post.excerpt}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center space-x-4">
+                      <span className="flex items-center">
+                        <User className="h-4 w-4 mr-1" />
+                        {post.author}
+                      </span>
+                      <span className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {post.date}
+                      </span>
+                      <span className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {post.readTime}
+                      </span>
+                    </div>
+                    <Link to={`/blog/${post.id}`} className="flex items-center text-green-600 hover:text-green-700">
+                      Read more
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
                   </div>
-                  <Link to={`/blog/${post.id}`} className="flex items-center text-green-600 hover:text-green-700">
-                    Read more
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Link>
                 </div>
-              </div>
-            </article>
+              </article>
+              {/* Add banner after every 6 posts */}
+              {(index + 1) % 6 === 0 && index !== blogPosts.length - 1 && (
+                <div className="hidden lg:block">
+                  <AdBanner160x300 />
+                </div>
+              )}
+            </React.Fragment>
           ))}
         </div>
       </div>
