@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { SiTiktok } from 'react-icons/si';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Logo from './Logo';
 
@@ -26,18 +27,46 @@ const Footer = () => {
               {getTranslatedText('footer.description', "Pakistan's leading agricultural marketplace connecting farmers with buyers.")}
             </p>
             <div className="flex space-x-4">
-              <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} className="hover-glow">
+              <motion.a
+                href="https://www.facebook.com/904334279419778"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className="hover-glow"
+              >
                 <Facebook className="h-5 w-5 hover:text-blue-400 cursor-pointer" />
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.2, rotate: -5 }} whileTap={{ scale: 0.9 }} className="hover-glow">
-                <Twitter className="h-5 w-5 hover:text-blue-300 cursor-pointer" />
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.2, rotate: 5 }} whileTap={{ scale: 0.9 }} className="hover-glow">
+              </motion.a>
+              <motion.a
+                href="https://www.instagram.com/kisanmarkaz/"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: -5 }}
+                whileTap={{ scale: 0.9 }}
+                className="hover-glow"
+              >
                 <Instagram className="h-5 w-5 hover:text-pink-400 cursor-pointer" />
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.2, rotate: -5 }} whileTap={{ scale: 0.9 }} className="hover-glow">
+              </motion.a>
+              <motion.a
+                href="https://www.tiktok.com/@kisanmarkaz"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                whileTap={{ scale: 0.9 }}
+                className="hover-glow"
+              >
+                <SiTiktok className="h-5 w-5 hover:text-black dark:hover:text-white cursor-pointer" />
+              </motion.a>
+              <motion.a
+                href="https://www.youtube.com/@Kisan_markaz"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: -5 }}
+                whileTap={{ scale: 0.9 }}
+                className="hover-glow"
+              >
                 <Youtube className="h-5 w-5 hover:text-red-400 cursor-pointer" />
-              </motion.div>
+              </motion.a>
             </div>
           </div>
 
