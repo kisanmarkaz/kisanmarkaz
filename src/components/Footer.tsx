@@ -67,16 +67,6 @@ const Footer = () => {
                   {getTranslatedText('footer.quickLinks.safetyTips', 'Safety Tips')}
                 </Link>
               </motion.li>
-              <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/success-stories" className="hover:text-white hover-lift inline-block">
-                  {getTranslatedText('footer.quickLinks.successStories', 'Success Stories')}
-                </Link>
-              </motion.li>
-              <motion.li whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <Link to="/blog" className="hover:text-white hover-lift inline-block">
-                  {getTranslatedText('footer.quickLinks.blog', 'Blog')}
-                </Link>
-              </motion.li>
             </ul>
           </div>
 

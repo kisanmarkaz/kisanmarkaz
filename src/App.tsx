@@ -20,9 +20,6 @@ import EditListing from "./pages/EditListing";
 import AboutUs from "./pages/AboutUs";
 import HowItWorks from "./pages/HowItWorks";
 import SafetyTips from "./pages/SafetyTips";
-import SuccessStories from "./pages/SuccessStories";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Help from "./pages/Help";
@@ -61,9 +58,6 @@ const AnimatedRoutes = () => {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/safety-tips" element={<SafetyTips />} />
-        <Route path="/success-stories" element={<SuccessStories />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:id" element={<BlogPost />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/help" element={<Help />} />
