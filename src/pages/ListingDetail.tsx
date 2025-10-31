@@ -362,25 +362,6 @@ const ListingDetail = () => {
                     <p className="font-medium">{listing.contact_name}</p>
                   </div>
 
-                  {listing.contact_phone && (
-                    <div>
-                      <label className="text-sm text-gray-500">Phone</label>
-                      <div className="flex items-center gap-2">
-                        {showPhone ? (
-                          <p className="font-medium">{listing.contact_phone}</p>
-                        ) : (
-                          <p className="font-medium">••••••••••</p>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleShowPhone}
-                        >
-                          {showPhone ? 'Hide' : 'Show'}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
 
                   {listing.contact_email && (
                     <div>

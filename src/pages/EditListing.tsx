@@ -50,7 +50,6 @@ interface ListingFormData {
   location_province: string;
   location_address?: string;
   contact_name?: string;
-  contact_phone?: string;
   contact_email?: string;
   status: ListingStatus;
   images: string[];
@@ -67,7 +66,6 @@ interface ListingWithDetails {
   location_province: string;
   location_address: string | null;
   contact_name: string | null;
-  contact_phone: string | null;
   contact_email: string | null;
   status: ListingStatus;
   images: string[];
@@ -161,7 +159,6 @@ export default function EditListing() {
       location_province: '',
       location_address: '',
       contact_name: '',
-      contact_phone: '',
       contact_email: '',
       status: ListingStatusEnum.active,
       images: []
@@ -185,7 +182,6 @@ export default function EditListing() {
         location_province: listing.location_province,
         location_address: listing.location_address || '',
         contact_name: listing.contact_name || '',
-        contact_phone: listing.contact_phone || '',
         contact_email: listing.contact_email || '',
         status: status,
         images: listing.images || []
@@ -307,7 +303,6 @@ export default function EditListing() {
         location_province: data.location_province,
         location_address: data.location_address || null,
         contact_name: data.contact_name || null,
-        contact_phone: data.contact_phone || null,
         contact_email: data.contact_email || null,
         status: data.status,
         images: data.images
@@ -630,18 +625,6 @@ export default function EditListing() {
                     id="contact_name"
                     {...form.register('contact_name')}
                     placeholder="Your name"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="contact_phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <Input
-                    id="contact_phone"
-                    {...form.register('contact_phone')}
-                    placeholder="Your phone number"
-                    type="tel"
                   />
                 </div>
 

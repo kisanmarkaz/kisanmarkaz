@@ -11,10 +11,10 @@ import { FEATURED_PRICING, type FeaturedDuration } from '@/constants/featuredLis
 import { supabase } from '@/integrations/supabase/client';
 
 const BANK_DETAILS = {
-  accountName: 'KisanMarkaz',
-  accountNumber: '0001-23456789',
-  bankName: 'HBL Pakistan',
-  iban: 'PK00HABB0000000000000000',
+  accountName: 'MUHAMMAD SAAD RASHID',
+  accountNumber: '00300111626028',
+  bankName: 'MEEZAN DIGITAL CENTRE',
+  iban: 'PK88MEZN0000300111626028',
 };
 
 const FeatureListing: React.FC = () => {
