@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Tractor, Wheat, Beef, Wrench } from 'lucide-react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { fadeIn, slideUp, staggerContainer, slideInLeft, slideInRight } from '@/lib/animations';
 import { Link } from 'react-router-dom';
@@ -11,8 +11,12 @@ const HeroSection = () => {
   const { t } = useLanguage();
   const [categoryIndex, setCategoryIndex] = useState(0);
   const heroRef = useRef(null);
-  const isInView = useInView(heroRef, { once: false, amount: 0.1 });
-  
+
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
   const categories = [
     { name: t('hero.categories.livestock'), icon: Beef },
     { name: t('hero.categories.crops'), icon: Wheat },
@@ -20,209 +24,158 @@ const HeroSection = () => {
     { name: t('hero.categories.services'), icon: Wrench }
   ];
 
-  // Rotate through categories more quickly
+  // Rotate through categories
   useEffect(() => {
     const interval = setInterval(() => {
       setCategoryIndex((prevIndex) => (prevIndex + 1) % categories.length);
-    }, 2000); // Reduced from 3000ms to 2000ms for faster rotation
+    }, 2500);
     return () => clearInterval(interval);
   }, [categories.length]);
 
-  // Enhanced parallax scroll effect
-  const [scrollY, setScrollY] = useState(0);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <motion.section 
+    <motion.section
       ref={heroRef}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      variants={fadeIn}
-      className="bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 text-white py-24 mt-16 relative overflow-hidden backdrop-blur-sm"
+      initial="visible" // Always visible initially
+      animate="visible"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20"
+      style={{
+        background: 'linear-gradient(135deg, hsl(160, 50%, 98%) 0%, hsl(150, 30%, 95%) 100%)'
+      }}
     >
-      {/* Background animated shapes with parallax effect */}
-      <motion.div 
-        className="absolute top-0 left-0 w-64 h-64 bg-emerald-400 rounded-full opacity-20 -translate-x-1/2 -translate-y-1/2 blur-2xl"
-        animate={{ 
-          scale: [1, 1.2, 1],
-          x: ['-50%', '-40%', '-50%'],
-          y: ['-50%', '-40%', '-50%'],
-          translateY: scrollY * 0.2,
-        }}
-        transition={{ 
-          duration: 8, 
-          repeat: Infinity,
-          repeatType: "reverse" 
-        }}
+      {/* Abstract Background Elements */}
+      <motion.div
+        className="absolute top-[-10%] left-[-5%] w-[40vw] h-[40vw] bg-primary/5 rounded-full blur-3xl"
+        style={{ y: y1 }}
       />
-      <motion.div 
-        className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-400 rounded-full opacity-20 translate-x-1/2 translate-y-1/2 blur-2xl"
-        animate={{ 
-          scale: [1, 1.3, 1],
-          x: ['50%', '40%', '50%'],
-          y: ['50%', '40%', '50%'],
-          translateY: scrollY * -0.1,
-        }}
-        transition={{ 
-          duration: 10, 
-          repeat: Infinity,
-          repeatType: "reverse" 
-        }}
+      <motion.div
+        className="absolute bottom-[-10%] right-[-5%] w-[35vw] h-[35vw] bg-secondary/10 rounded-full blur-3xl"
+        style={{ y: y2 }}
       />
 
-      {/* Decorative pattern overlay with parallax effect */}
-      <motion.div 
-        className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"
-        style={{
-          y: scrollY * 0.05
-        }}
-      />
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <motion.div
           variants={staggerContainer}
-          className="max-w-4xl mx-auto text-center"
+          initial="hidden"
+          animate="visible"
+          className="max-w-5xl mx-auto text-center"
         >
-          <ScrollReveal variant="slideUp" threshold={0.2}>
-            <motion.h1 
-              variants={slideUp}
-              className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-emerald-100"
-            >
-              <span className="block text-5xl sm:text-6xl md:text-7xl mb-1 sm:mb-2">KisanMarkaz</span>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-                <span className="inline-block">Pakistan First</span>
-                <div className="inline-block h-16 sm:h-20 overflow-hidden relative flex items-center min-w-[200px] sm:min-w-[350px]" style={{ transform: "translateY(2px)" }}>
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={categoryIndex}
-                      initial={{ y: 40, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -40, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
-                      className="text-yellow-300 font-bold absolute left-0 right-0 flex items-center justify-start pl-3"
-                      style={{ transform: "translateY(-1px)" }}
-                    >
-                      {categories[categoryIndex].name}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.3 }}
-                className="mt-2"
-              >
-                Platform
-              </motion.div>
-            </motion.h1>
-          </ScrollReveal>
-          
-          <ScrollReveal variant="fadeIn" delay={0.2} threshold={0.2}>
-            <motion.p 
-              variants={slideUp}
-              className="text-lg sm:text-xl mb-8 sm:mb-10 text-emerald-100"
-            >
-              {t('hero.description')}
-            </motion.p>
-          </ScrollReveal>
-          
-          <motion.div 
-            variants={staggerContainer}
-            className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 mb-12"
-          >
-            {categories.map((category, index) => {
-              const Icon = category.icon;
-              const isActive = index === categoryIndex;
-              
-              return (
-                <ScrollReveal 
-                  key={category.name} 
-                  variant={index === 0 ? "slideInLeft" : index === 1 ? "slideUp" : "slideInRight"}
-                  delay={0.1 * index}
-                  threshold={0.2}
-                >
-                  <motion.div 
-                    variants={index === 0 ? slideInLeft : index === 1 ? slideUp : slideInRight}
-                    whileHover={{ scale: 1.1, y: -5 }}
-                    animate={isActive ? { 
-                      scale: [1, 1.08, 1],
-                      boxShadow: ["0 4px 6px rgba(0,0,0,0.1)", "0 10px 15px rgba(0,0,0,0.2)", "0 4px 6px rgba(0,0,0,0.1)"]
-                    } : {}}
-                    transition={isActive ? { duration: 1, repeat: Infinity } : {}}
-                    className={`flex items-center text-white backdrop-blur-md ${isActive ? 'bg-white/30' : 'bg-white/10'} px-3 sm:px-4 md:px-5 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-xl border ${isActive ? 'border-yellow-300/50' : 'border-white/20'} hover:border-white/40 transition-all duration-200 w-full sm:w-auto`}
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, index % 2 === 0 ? 10 : -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 3, delay: index * 0.3 }}
-                    >
-                      <Icon className={`h-8 w-8 mr-2 ${isActive ? 'text-yellow-300 animate-pulse' : 'text-yellow-300 animate-pulse-slow'}`} />
-                    </motion.div>
-                    <span>{category.name}</span>
-                  </motion.div>
-                </ScrollReveal>
-              );
-            })}
+          {/* Main Headline */}
+          <motion.div variants={slideUp} className="mb-6 relative">
+            <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 animate-pulse-soft">
+              #1 Marketplace for Farmers
+            </span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-none text-foreground">
+              <span className="block mb-2">The Future of</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-500 to-secondary relative">
+                Agriculture
+                {/* Underline decoration */}
+                <svg className="absolute w-full h-3 -bottom-1 left-0 text-secondary opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                </svg>
+              </span>
+            </h1>
           </motion.div>
 
-          <ScrollReveal variant="slideUp" delay={0.3} threshold={0.2}>
-            <motion.div 
-              variants={slideUp}
-              className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full sm:w-auto"
-            >
+          {/* Animated Subtext/Categories */}
+          <motion.div variants={slideUp} className="h-16 md:h-20 mb-8 flex items-center justify-center">
+            <AnimatePresence mode="wait">
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                key={categoryIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl md:text-3xl text-muted-foreground font-light flex items-center gap-3"
               >
-                <Link to="/search">
-                  <Button 
-                    size="lg" 
-                    className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold shadow-lg hover:shadow-yellow-500/50 transition-all duration-300"
-                  >
-                    {t('hero.buttons.startBuying')}
-                    <motion.div
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </motion.div>
-                  </Button>
-                </Link>
+                Buy & Sell
+                <span className="font-semibold text-primary flex items-center gap-2 bg-white/50 px-4 py-2 rounded-2xl shadow-sm border border-white/60 backdrop-blur-sm">
+                  {React.createElement(categories[categoryIndex].icon, { className: "w-6 h-6 md:w-8 md:h-8" })}
+                  {categories[categoryIndex].name}
+                </span>
               </motion.div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link to="/sell">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="w-full sm:w-auto bg-white/10 backdrop-blur-md border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 shadow-lg hover:shadow-yellow-500/30 transition-all duration-300"
-                  >
-                    <motion.span
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      {t('hero.buttons.postAd')}
-                    </motion.span>
-                  </Button>
-                </Link>
-              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          <motion.p
+            variants={slideUp}
+            className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
+          >
+            {t('hero.description')}
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            variants={slideUp}
+            className="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto"
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/search">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto h-14 px-8 text-lg rounded-2xl bg-primary hover:bg-primary/90 text-white shadow-xl hover:shadow-primary/25 transition-all duration-300"
+                >
+                  {t('hero.buttons.startBuying')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </motion.div>
-          </ScrollReveal>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/sell">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto h-14 px-8 text-lg rounded-2xl border-2 border-input bg-white/50 hover:bg-white hover:border-primary/50 text-foreground shadow-sm transition-all duration-300"
+                >
+                  <Plus className="mr-2 h-5 w-5 text-secondary-foreground" />
+                  {t('hero.buttons.postAd')}
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Floating Category Pills - Decorative */}
+          <div className="absolute top-1/2 left-0 w-full h-full pointer-events-none -z-10 hidden lg:block opacity-60">
+            {categories.map((cat, i) => {
+              const xPos = i % 2 === 0 ? '10%' : '85%';
+              const yPos = `${20 + (i * 20)}%`;
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute glass-card px-4 py-3 flex items-center gap-3 text-sm font-medium text-foreground/80"
+                  style={{ left: xPos, top: yPos }}
+                  animate={{
+                    y: [0, -15, 0],
+                  }}
+                  transition={{
+                    duration: 4 + i,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.5
+                  }}
+                >
+                  <div className="p-2 bg-primary/10 rounded-full text-primary">
+                    {React.createElement(cat.icon, { size: 16 })}
+                  </div>
+                  {cat.name}
+                </motion.div>
+              )
+            })}
+          </div>
         </motion.div>
       </div>
     </motion.section>
   );
 };
+
+// Helper Icon Component
+function Plus({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+  )
+}
 
 export default HeroSection;

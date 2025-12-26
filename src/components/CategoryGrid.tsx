@@ -2,9 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Beef, Wheat, Tractor, Home, Truck, Wrench, Droplets, TreePine } from 'lucide-react';
 import { useCategories } from '@/hooks/useCategories';
-import { motion } from 'framer-motion';
-import { staggerContainer, fadeIn, scaleUp } from '@/lib/animations';
-import { useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { staggerContainer, scaleUp } from '@/lib/animations';
 
 const iconMap = {
   'Beef': Beef,
@@ -24,19 +23,19 @@ const CategoryGrid = () => {
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gradient-to-b from-transparent to-primary/5">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+          <h2 className="text-4xl font-bold text-center mb-12 text-foreground">
             Browse Categories
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 animate-pulse">
-                <div className="flex items-center mb-4">
-                  <div className="bg-gray-200 p-3 rounded-lg w-12 h-12"></div>
-                  <div className="ml-4">
-                    <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-16"></div>
+              <div key={i} className="bg-white/50 rounded-2xl p-6 border border-white/40 animate-pulse h-32">
+                <div className="flex items-center h-full gap-4">
+                  <div className="w-12 h-12 bg-gray-200/50 rounded-xl"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200/50 rounded w-1/2"></div>
+                    <div className="h-3 bg-gray-200/50 rounded w-1/3"></div>
                   </div>
                 </div>
               </div>
@@ -48,18 +47,26 @@ const CategoryGrid = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-50" ref={ref}>
-      <div className="container mx-auto px-4">
-        <motion.h2 
+    <section className="py-20 relative overflow-hidden" ref={ref}>
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl font-bold text-center mb-12 text-gray-900"
+          className="text-center mb-16"
         >
-          Browse Categories
-        </motion.h2>
-        
-        <motion.div 
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Browse Categories
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Explore our wide range of agricultural categories and find exactly what you need.
+          </p>
+        </motion.div>
+
+        <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -72,34 +79,38 @@ const CategoryGrid = () => {
                 key={category.id}
                 variants={scaleUp}
                 custom={index}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ 
-                  scale: 1.03, 
-                  boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)",
-                  y: -5
-                }}
+                whileHover={{ y: -5 }}
+                className="h-full"
               >
                 <Link
                   to={`/category/${category.slug}`}
-                  className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 group block h-full transition-all duration-300"
+                  className="group block h-full glass-card bg-white/60 hover:bg-white/90 border-white/50 p-6 transition-all duration-300 relative overflow-hidden"
                 >
-                  <div className="flex items-center mb-4">
-                    <motion.div 
-                      className="bg-green-100 p-3 rounded-lg group-hover:bg-green-200 transition-colors"
-                      whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-                      transition={{ duration: 0.5 }}
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150 duration-500" />
+
+                  <div className="relative flex items-center gap-5">
+                    <motion.div
+                      className="bg-white p-3.5 rounded-2xl shadow-sm group-hover:shadow-md transition-all duration-300 ring-1 ring-black/5"
+                      whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                     >
-                      <IconComponent className="h-6 w-6 text-green-600" />
+                      <IconComponent className="h-7 w-7 text-primary group-hover:text-secondary transition-colors duration-300" />
                     </motion.div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-200">
+
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors duration-200 flex items-center gap-2">
                         {category.name}
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity text-primary text-sm transform translate-x-1 group-hover:translate-x-0 duration-300">→</span>
                       </h3>
-                      <p className="text-sm text-gray-500">{category.subcategories?.length || 0} subcategories</p>
+                      <p className="text-sm text-muted-foreground mt-1 font-medium">
+                        {category.subcategories?.length || 0} subcategories
+                      </p>
                     </div>
                   </div>
+
                   {category.description && (
-                    <p className="text-sm text-gray-500 line-clamp-2">{category.description}</p>
+                    <p className="mt-4 text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 h-0 group-hover:h-auto transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                      {category.description}
+                    </p>
                   )}
                 </Link>
               </motion.div>

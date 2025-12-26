@@ -8,7 +8,7 @@ import SearchSuggestions from './SearchSuggestions';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeIn, slideInLeft, slideInRight, slideUp } from '@/lib/animations';
+import { fadeIn, slideInRight } from '@/lib/animations';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useCategories } from '@/hooks/useCategories';
 import Logo from './Logo';
@@ -41,11 +41,7 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(offset > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -65,7 +61,7 @@ const Header = () => {
     if (mobileMenuOpen) {
       document.addEventListener('click', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
@@ -94,201 +90,213 @@ const Header = () => {
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-300 ${scrolled ? 'glass-dark bg-green-600/60 shadow-xl' : 'glass bg-green-600/30 shadow-lg'
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 text-foreground transition-all duration-500 ease-in-out px-4 md:px-6 py-4
+        ${scrolled ? 'pt-2 pb-2' : 'pt-4 pb-4'}
+      `}
     >
-      <div className="container mx-auto px-4">
+      <div className={`
+        mx-auto rounded-2xl transition-all duration-500 border
+        ${scrolled
+          ? 'glass-card bg-white/80 shadow-lg border-white/50 max-w-7xl'
+          : 'bg-transparent border-transparent max-w-[1400px]'
+        }
+      `}>
+        <div className="container mx-auto px-2 md:px-4">
 
-        {/* Main header */}
-        <div className="flex flex-col md:flex-row items-center justify-between py-4 gap-2 md:gap-4">
-          {/* Logo and burger menu row for mobile */}
-          <div className="flex items-center justify-between w-full md:w-auto">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Logo size="md" />
-            </motion.div>
-            
-            {/* Mobile menu button - positioned at the far right */}
-            <div className="md:hidden">
-              <button
-                className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-green-200'}`}></span>
-                <span className={`block h-0.5 w-6 bg-white transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-green-200'}`}></span>
-              </button>
-            </div>
-          </div>
-
-          {/* Search bar */}
-          <motion.form
-            variants={fadeIn}
-            onSubmit={handleSubmit}
-            className="flex flex-1 max-w-4xl mx-auto relative w-full mt-4 md:mt-0"
-          >
-            <div className="relative flex w-full shadow-xl rounded-lg overflow-hidden glass-input">
-              <Input
-                type="text"
-                placeholder={t('search.placeholder')}
-                className="flex-1 w-full min-w-0 rounded-l-lg border-0 bg-white/30 text-white placeholder-white/70 focus:ring-2 focus:ring-yellow-500/50 focus:bg-white/20 transition-all duration-200 backdrop-blur-md"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => {
-                  // Delay hiding suggestions to allow clicking them
-                  setTimeout(() => setShowSuggestions(false), 200);
-                }}
-              />
-              <div className="flex items-center px-2 md:px-3 bg-white/20 border-l border-white/30 backdrop-blur-md">
-                <MapPin className="h-4 w-4 text-white mr-1 md:mr-2 flex-shrink-0" />
-                <select
-                  className="border-0 bg-transparent text-white text-xs md:text-sm focus:outline-none min-w-0"
-                  value={searchLocation}
-                  onChange={handleLocationChange}
-                >
-                  <option value="all" className="text-gray-800">{t('search.locations.all')}</option>
-                  <option value="punjab" className="text-gray-800">{t('search.locations.punjab')}</option>
-                  <option value="sindh" className="text-gray-800">{t('search.locations.sindh')}</option>
-                  <option value="kpk" className="text-gray-800">{t('search.locations.kpk')}</option>
-                  <option value="balochistan" className="text-gray-800">{t('search.locations.balochistan')}</option>
-                </select>
-                {searchLocation !== 'all' && (
-                  <select
-                    className="border-0 bg-transparent text-white text-xs md:text-sm focus:outline-none ml-1 md:ml-2 border-l border-white/30 pl-1 md:pl-2 min-w-0"
-                    value={searchCity}
-                    onChange={(e) => setSearchCity(e.target.value)}
-                  >
-                    <option value="all" className="text-gray-800">{t('search.locations.allCities')}</option>
-                    {cityOptions[searchLocation as keyof typeof cityOptions]?.map((city) => (
-                      <option key={city} value={city.toLowerCase()} className="text-gray-800">
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+          {/* Main header */}
+          <div className="flex flex-col md:flex-row items-center justify-between py-2 gap-2 md:gap-4">
+            {/* Logo and burger menu row for mobile */}
+            <div className="flex items-center justify-between w-full md:w-auto">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="hover-glow"
+                className="flex items-center"
               >
-                <Button
-                  type="submit"
-                  className="rounded-l-none bg-yellow-500 hover:bg-yellow-600 text-gray-900 transition-all duration-200 shadow-lg hover:shadow-yellow-500/50"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
+                <Logo size={scrolled ? "sm" : "md"} />
               </motion.div>
+
+              {/* Mobile menu button - positioned at the far right */}
+              <div className="md:hidden">
+                <button
+                  className="relative w-8 h-8 flex flex-col justify-center items-center group mobile-menu-button"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  <span className={`block h-0.5 w-6 bg-primary transform transition duration-300 ease-in-out ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : 'group-hover:bg-primary/80'}`}></span>
+                  <span className={`block h-0.5 w-6 bg-primary transform transition duration-300 ease-in-out my-1 ${mobileMenuOpen ? 'opacity-0' : 'group-hover:bg-primary/80'}`}></span>
+                  <span className={`block h-0.5 w-6 bg-primary transform transition duration-300 ease-in-out ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : 'group-hover:bg-primary/80'}`}></span>
+                </button>
+              </div>
             </div>
 
-            <AnimatePresence>
-              {showSuggestions && (
+            {/* Search bar */}
+            <motion.form
+              variants={fadeIn}
+              onSubmit={handleSubmit}
+              className="flex flex-1 max-w-3xl mx-auto relative w-full mt-2 md:mt-0 transition-all duration-300"
+            >
+              <div className={`relative flex w-full rounded-2xl overflow-hidden transition-all duration-300 ${scrolled ? 'shadow-md border border-gray-100' : 'shadow-xl glass-input'}`}>
+                <Input
+                  type="text"
+                  placeholder={t('search.placeholder')}
+                  className={`flex-1 w-full min-w-0 rounded-l-2xl border-0 bg-white/60 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all duration-200 backdrop-blur-md h-12`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => {
+                    // Delay hiding suggestions to allow clicking them
+                    setTimeout(() => setShowSuggestions(false), 200);
+                  }}
+                />
+                <div className="flex items-center px-2 md:px-3 bg-white/40 border-l border-white/50 backdrop-blur-md">
+                  <MapPin className="h-4 w-4 text-primary mr-1 md:mr-2 flex-shrink-0" />
+                  <select
+                    className="border-0 bg-transparent text-gray-800 text-xs md:text-sm focus:outline-none min-w-0 font-medium cursor-pointer"
+                    value={searchLocation}
+                    onChange={handleLocationChange}
+                  >
+                    <option value="all">{t('search.locations.all')}</option>
+                    <option value="punjab">{t('search.locations.punjab')}</option>
+                    <option value="sindh">{t('search.locations.sindh')}</option>
+                    <option value="kpk">{t('search.locations.kpk')}</option>
+                    <option value="balochistan">{t('search.locations.balochistan')}</option>
+                  </select>
+                  {searchLocation !== 'all' && (
+                    <select
+                      className="border-0 bg-transparent text-gray-800 text-xs md:text-sm focus:outline-none ml-1 md:ml-2 border-l border-gray-300 pl-1 md:pl-2 min-w-0 font-medium cursor-pointer"
+                      value={searchCity}
+                      onChange={(e) => setSearchCity(e.target.value)}
+                    >
+                      <option value="all">{t('search.locations.allCities')}</option>
+                      {cityOptions[searchLocation as keyof typeof cityOptions]?.map((city) => (
+                        <option key={city} value={city.toLowerCase()}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 z-[60]"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="hover-glow z-10"
                 >
-                  <SearchSuggestions
-                    query={searchQuery}
-                    onSelect={handleSuggestionSelect}
-                  />
+                  <Button
+                    type="submit"
+                    className="h-12 rounded-none rounded-r-2xl bg-primary hover:bg-primary/90 text-white transition-all duration-200 shadow-md hover:shadow-primary/30 px-6"
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.form>
+              </div>
 
-          {/* Action buttons - mobile and desktop */}
-          <motion.div
-            variants={slideInRight}
-className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 absolute md:static top-full right-0 bg-green-600/90 md:bg-transparent p-4 md:p-0 rounded-lg shadow-lg md:shadow-none z-50 mobile-menu`}
-          >
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-white hover:text-green-200">
-                  <Grid className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link to="/featured" className="w-full font-semibold text-yellow-600">
-                    ⭐ Featured Listings
-                  </Link>
-                </DropdownMenuItem>
-                <div className="border-t my-1"></div>
-                {categories.map((category) => (
-                  <DropdownMenuItem key={category.id} asChild>
-                    <Link to={`/category/${category.slug}`} className="w-full">
-                      {category.name}
+              <AnimatePresence>
+                {showSuggestions && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 right-0 z-[60] mt-2"
+                  >
+                    <div className="bg-white/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/50 overflow-hidden">
+                      <SearchSuggestions
+                        query={searchQuery}
+                        onSelect={handleSuggestionSelect}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.form>
+
+            {/* Action buttons - mobile and desktop */}
+            <motion.div
+              variants={slideInRight}
+              className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-3 absolute md:static top-full right-4 left-4 md:left-auto md:right-auto bg-white/95 md:bg-transparent p-6 md:p-0 rounded-2xl shadow-2xl md:shadow-none z-50 mobile-menu mt-4 md:mt-0 ring-1 ring-black/5 md:ring-0`}
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-xl">
+                    <Grid className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 glass-card border-white/50 bg-white/90">
+                  <DropdownMenuItem asChild className="focus:bg-primary/10 cursor-pointer">
+                    <Link to="/featured" className="w-full font-semibold text-primary flex items-center gap-2">
+                      Featured Listings
                     </Link>
                   </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/favorites">
-                <Button variant="ghost" className="text-white hover:text-green-200 transition-colors duration-200 relative">
-                  <Heart className="h-5 w-5" />
-                  {favorites.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-yellow-500 text-xs text-gray-900 rounded-full w-4 h-4 flex items-center justify-center">
-                      {favorites.length}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-            </motion.div>
-            {user ? (
-              <>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link to="/sell">
-                    <Button className="glass-button bg-yellow-500/90 hover:bg-yellow-500 text-gray-900 shadow-lg hover:shadow-yellow-500/50 transition-all duration-300">
-                      <Plus className="h-4 w-4 mr-2 animate-pulse-slow" />
-                      {t('common.sell')}
-                    </Button>
-                  </Link>
-                </motion.div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-white hover:text-green-200">
-                      <User className="h-5 w-5 mr-2" />
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem asChild>
-                      <Link to="/my-listings" className="w-full">
-                        {t('common.myListings')}
+                  <div className="border-t border-gray-100 my-1"></div>
+                  {categories.map((category) => (
+                    <DropdownMenuItem key={category.id} asChild className="focus:bg-primary/5 cursor-pointer">
+                      <Link to={`/category/${category.slug}`} className="w-full">
+                        {category.name}
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/messages" className="w-full flex items-center">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        My Messages
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/settings" className="w-full">
-                        {t('common.settings')}
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/auth">
-                  <Button className="glass-button bg-yellow-500/90 hover:bg-yellow-500 text-gray-900 shadow-lg hover:shadow-yellow-500/50 transition-all duration-300">
-                    {t('common.signIn')}
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/favorites">
+                  <Button variant="ghost" className="text-foreground/80 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors duration-200 relative">
+                    <Heart className="h-5 w-5" />
+                    {favorites.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full w-4 h-4 flex items-center justify-center animate-zoom-in">
+                        {favorites.length}
+                      </span>
+                    )}
                   </Button>
                 </Link>
               </motion.div>
-            )}
-          </motion.div>
+              {user ? (
+                <>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Link to="/sell">
+                      <Button className="bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg hover:shadow-secondary/30 transition-all duration-300 rounded-xl font-semibold">
+                        <Plus className="h-4 w-4 mr-2" />
+                        {t('common.sell')}
+                      </Button>
+                    </Link>
+                  </motion.div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-xl">
+                        <User className="h-5 w-5 mr-2" />
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 glass-card border-white/50 bg-white/90">
+                      <DropdownMenuItem asChild className="focus:bg-primary/10 cursor-pointer">
+                        <Link to="/my-listings" className="w-full">
+                          {t('common.myListings')}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="focus:bg-primary/10 cursor-pointer">
+                        <Link to="/messages" className="w-full flex items-center">
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          My Messages
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="focus:bg-primary/10 cursor-pointer">
+                        <Link to="/settings" className="w-full">
+                          {t('common.settings')}
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link to="/auth">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-primary/30 transition-all duration-300 rounded-xl">
+                      {t('common.signIn')}
+                    </Button>
+                  </Link>
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
         </div>
       </div>
     </motion.header>

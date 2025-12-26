@@ -61,163 +61,135 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, showEditButton = fal
   };
 
   const statusColors = {
-    active: 'bg-green-500',
-    sold: 'bg-blue-500',
-    expired: 'bg-gray-500',
-    draft: 'bg-yellow-500'
+    active: 'bg-green-500/90',
+    sold: 'bg-blue-500/90',
+    expired: 'bg-gray-500/90',
+    draft: 'bg-yellow-500/90'
   };
 
   // Check if listing is currently featured
-  const isFeatured = Boolean(listing.featured_listings && 
+  const isFeatured = Boolean(listing.featured_listings &&
     listing.featured_listings.length > 0 &&
-    listing.featured_listings.some((fl: any) => 
-      fl.status === 'active' && 
-      new Date(fl.featured_from) <= new Date() && 
+    listing.featured_listings.some((fl: any) =>
+      fl.status === 'active' &&
+      new Date(fl.featured_from) <= new Date() &&
       new Date(fl.featured_until) >= new Date()
     ));
 
+  // Determine price color/style based on status
+  const priceStyle = listing.status === 'sold' ? 'text-gray-500 line-through' : 'text-primary font-bold';
+
   return (
     <FeaturedListingCardWrapper isFeatured={isFeatured}>
-      <motion.div 
-        className={`glass-card bg-white/90 rounded-lg overflow-hidden hover-lift ${
-          isFeatured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-100' : ''
-        }`}
-        whileHover={{ y: -5 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      <motion.div
+        className={`group relative bg-white border border-gray-100 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/20 ${isFeatured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-100/50' : ''
+          }`}
+        whileHover={{ y: -8 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
       >
-        <div className="relative overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
           <motion.img
             src={listing.images?.[0] || "https://images.unsplash.com/photo-1465379944081-7f47de8d74ac?w=400&h=300&fit=crop"}
             alt={listing.title}
-            className="w-full h-48 object-cover transition-transform duration-700"
-            whileHover={{ scale: 1.1 }}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <motion.span 
-            className={`absolute top-2 left-2 ${statusColors[listing.status]} text-white px-2 py-1 text-xs font-semibold rounded-full backdrop-blur-sm shadow-md`}
-            whileHover={{ scale: 1.1 }}
-            animate={{ y: [0, -3, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          <motion.span
+            className={`absolute top-3 left-3 ${statusColors[listing.status]} text-white px-3 py-1 text-xs font-bold rounded-full backdrop-blur-md shadow-sm`}
+            whileHover={{ scale: 1.05 }}
           >
             {listing.status.toUpperCase()}
           </motion.span>
+
+          {listing.category?.name && (
+            <span className="absolute bottom-3 right-3 bg-white/90 backdrop-blur text-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+              {listing.category.name}
+            </span>
+          )}
         </div>
 
-        <div className="p-4 backdrop-blur-sm">
-          <div className="flex justify-between items-start mb-2">
-            <motion.span 
-              className="text-xs bg-green-100/80 text-green-700 px-2 py-1 rounded-full glass-button"
-              whileHover={{ scale: 1.1 }}
-            >
-              {listing.category?.name}
-            </motion.span>
-            <motion.span 
-              className="text-lg font-bold text-green-600 bg-green-50/50 px-3 py-1 rounded-full glass"
-              whileHover={{ scale: 1.05, rotate: 1 }}
-              animate={{ y: [0, -2, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            >
+        <div className="p-5">
+          <div className="flex justify-between items-baseline mb-2">
+            <h3 className={`text-xl ${priceStyle}`}>
               Rs {listing.price?.toLocaleString()}
-            </motion.span>
+            </h3>
+            {listing.status === 'sold' && <span className="text-sm font-semibold text-blue-600">SOLD</span>}
           </div>
 
           <Link to={`/listing/${listing.id}`}>
-            <motion.h3 
-              className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition-colors"
-              whileHover={{ x: 5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <h3 className="font-medium text-lg text-gray-800 mb-3 line-clamp-1 group-hover:text-primary transition-colors">
               {listing.title}
-            </motion.h3>
+            </h3>
           </Link>
 
-          <motion.div 
-            className="flex items-center text-sm text-gray-500 mb-2"
-            whileHover={{ x: 5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              animate={{ rotate: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 3 }}
-            >
-              <MapPin className="h-4 w-4 mr-1 text-green-500" />
-            </motion.div>
-            {listing.location_city}, {listing.location_province}
-          </motion.div>
+          <div className="flex items-center text-sm text-gray-500 mb-2">
+            <MapPin className="h-4 w-4 mr-1.5 text-primary/70" />
+            <span className="truncate">{listing.location_city}, {listing.location_province}</span>
+          </div>
 
-          <motion.div 
-            className="flex items-center text-xs text-gray-400 mb-4"
-            whileHover={{ x: 5 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              animate={{ rotate: [0, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 3, delay: 0.5 }}
-            >
-              <Calendar className="h-3 w-3 mr-1 text-green-400" />
-            </motion.div>
+          <div className="flex items-center text-xs text-gray-400 mb-4 pb-4 border-b border-gray-100">
+            <Calendar className="h-3.5 w-3.5 mr-1.5" />
             {format(new Date(listing.created_at), 'MMM d, yyyy')}
-          </motion.div>
+          </div>
 
-          {showEditButton && (
-            <div className="flex gap-2">
+          {showEditButton ? (
+            <div className="flex gap-2.5">
               <Link to={`/edit-listing/${listing.id}`} className="flex-1">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="w-full glass-button bg-green-50/50 border-green-200/50 hover:bg-green-100/50"
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, 10, 0] }}
-                      transition={{ repeat: Infinity, duration: 3 }}
-                    >
-                      <Edit className="h-4 w-4 mr-1 text-green-600" />
-                    </motion.div>
-                    Edit
-                  </Button>
-                </motion.div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-xl border-primary/20 text-primary hover:bg-primary/5 hover:text-primary"
+                >
+                  <Edit className="h-4 w-4 mr-1.5" />
+                  Edit
+                </Button>
               </Link>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
-                    <Button
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full glass-button bg-red-50/50 border-red-200/50 hover:bg-red-100/50 text-red-600 hover:text-red-700"
-                    >
-                      <motion.div
-                        animate={{ rotate: [0, -10, 0] }}
-                        transition={{ repeat: Infinity, duration: 3 }}
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                      </motion.div>
-                      Delete
-                    </Button>
-                  </motion.div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1.5" />
+                    Delete
+                  </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="glass-card border-red-200/50 backdrop-blur-md">
+                <AlertDialogContent className="rounded-2xl border-none shadow-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-red-600">Are you sure?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-red-600">Delete Listing?</AlertDialogTitle>
                     <AlertDialogDescription>
                       This action cannot be undone. This will permanently delete your listing.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="glass-button">Cancel</AlertDialogCancel>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <AlertDialogAction 
-                        onClick={handleDelete}
-                        className="bg-red-600 hover:bg-red-700 hover-glow"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </motion.div>
+                    <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-red-600 hover:bg-red-700 rounded-xl"
+                    >
+                      Delete
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </div>
+          ) : (
+            <Link to={`/listing/${listing.id}`}>
+              <div className="flex items-center text-sm font-medium text-primary group-hover:underline decoration-2 underline-offset-4">
+                View Details
+                <motion.span
+                  className="inline-block ml-1"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: 3 }}
+                >
+                  →
+                </motion.span>
+              </div>
+            </Link>
           )}
         </div>
       </motion.div>
@@ -225,4 +197,4 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, showEditButton = fal
   );
 };
 
-export default ListingCard; 
+export default ListingCard;
